@@ -1,52 +1,128 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
-
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!--  created with Free Online Sitemap Generator www.xml-sitemaps.com  -->
 <url>
-  <loc>https://godzilla214.github.io/</loc>
-  <lastmod>2023-10-25T14:54:31+00:00</lastmod>
-  <priority>1.00</priority>
+<loc>https://godzilla214.github.io/</loc>
+<lastmod>2023-10-31T15:33:42+00:00</lastmod>
+<priority>1.00</priority>
 </url>
 <url>
-  <loc>https://godzilla214.github.io/wolf3d/index.html</loc>
-  <lastmod>2023-10-25T14:54:31+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://godzilla214.github.io/wolf3d/index.html</loc>
+<lastmod>2023-10-31T15:33:44+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://godzilla214.github.io/wordle/index.html</loc>
-  <lastmod>2023-10-25T14:54:31+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://godzilla214.github.io/wordle/index.html</loc>
+<lastmod>2023-10-31T15:33:44+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://godzilla214.github.io/webgl-fluid-simulation/index.html</loc>
-  <lastmod>2023-10-25T14:54:31+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://godzilla214.github.io/webgl-fluid-simulation/index.html</loc>
+<lastmod>2023-10-31T15:33:44+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://godzilla214.github.io/weavesilk/index.html</loc>
-  <lastmod>2023-10-25T14:54:31+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://godzilla214.github.io/xx142-b2exe/index.html</loc>
+<lastmod>2023-10-31T15:33:44+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://godzilla214.github.io/xx142-b2exe/index.html</loc>
-  <lastmod>2023-10-25T14:54:31+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://godzilla214.github.io/superhot/index.html</loc>
+<lastmod>2023-10-31T15:33:42+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://godzilla214.github.io/yoshifabrication/index.html</loc>
-  <lastmod>2023-10-25T14:54:31+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://godzilla214.github.io/yoshifabrication/index.html</loc>
+<lastmod>2023-10-31T15:33:44+00:00</lastmod>
+<priority>0.80</priority>
 </url>
 <url>
-  <loc>https://godzilla214.github.io/minecraft-classic/index.html</loc>
-  <lastmod>2023-10-25T14:54:31+00:00</lastmod>
-  <priority>0.80</priority>
+<loc>https://godzilla214.github.io/temple-run-2/index</loc>
+<lastmod>2023-10-31T15:33:43+00:00</lastmod>
+<priority>0.80</priority>
 </url>
-
-
+<url>
+<loc>https://godzilla214.github.io/supermarioconstruct/index</loc>
+<lastmod>2023-10-31T15:33:43+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/smokingbarrels/index</loc>
+<lastmod>2023-10-31T15:33:42+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/just-fall/index</loc>
+<lastmod>2023-10-31T15:33:42+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/ctr-tr/index</loc>
+<lastmod>2023-10-31T15:33:42+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/evil-glitch/index</loc>
+<lastmod>2023-10-31T15:33:42+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/burger-and-frights/index.html</loc>
+<lastmod>2023-10-31T15:33:41+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/OfflineParadise/index.html</loc>
+<lastmod>2023-10-31T15:33:41+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/twitch-tetris/about.html</loc>
+<lastmod>2023-10-31T15:33:44+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/veloce/index.html</loc>
+<lastmod>2023-10-31T15:33:44+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/townscaper/index.html</loc>
+<lastmod>2023-10-31T15:33:44+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/tiny-islands/index.html</loc>
+<lastmod>2023-10-31T15:33:43+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/shellshockers/index.html</loc>
+<lastmod>2023-10-31T15:33:42+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/rabbit-samurai/index.html</loc>
+<lastmod>2023-10-31T15:33:42+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/soccer-skills/index.html</loc>
+<lastmod>2023-10-31T15:33:42+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/twitch-tetris/index.html</loc>
+<lastmod>2023-10-31T15:33:44+00:00</lastmod>
+<priority>0.64</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/twitch-tetris/controls.html</loc>
+<lastmod>2023-10-31T15:33:44+00:00</lastmod>
+<priority>0.64</priority>
+</url>
+<url>
+<loc>https://godzilla214.github.io/twitch-tetris/highScores.html</loc>
+<lastmod>2023-10-31T15:33:44+00:00</lastmod>
+<priority>0.64</priority>
+</url>
 </urlset>
