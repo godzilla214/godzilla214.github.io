@@ -1,0 +1,30 @@
+{
+	"noFavorites": "Vous n'avez ajouté aucun favori.",
+	"seeAll": "Voir Tout",
+	"apps": "Apps",
+	"allGames": "Tous les jeux",
+	"searchByGame": "Rechercher par nom de jeu",
+	"searchByApp": "Search by app name",
+	"mostPopular": "Rechercher par nom d'app",
+	"leastPopular": "Le moins populaire",
+	"nameASC": "Nom (A-Z)",
+	"nameDES": "Nom (Z-A)",
+	"click": "Cliquez pour vous concentrer",
+	"panorama": "Mode panoramique",
+	"favorite": "Ajouter aux Favoris",
+	"controls": "Les contrôles",
+	"fullscreen": "Mode plein écran",
+	"error": {
+		"player": {
+			"errorMessage": "Une erreur est survenue lors du chargement de l'application/jeu",
+			"fetch": "Impossible de récupérer les informations",
+			"resolve": "Impossible de déterminer le proxy/emplacement",
+			"plays": "Impossible de compter les parties jouées"
+		},
+		"category": {
+			"popularGames": "Une erreur s'est produite lors du chargement des jeux populaires",
+			"generic": "Une erreur s'est produite lors du chargement de la catégorie",
+			"fetch": "Impossible de récupérer les données de catégorie."
+		}
+	}
+}
