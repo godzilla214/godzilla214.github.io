@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Racism Simulator</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    #racismLevel {
+      margin-top: 20px;
+    }
+
+    #racismLevel span {
+      font-weight: bold;
+    }
+
+    #racistStatements {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Racism Simulator</h1>
+  <button onclick="increaseRacismLevel()">Increase Racism Level</button>
+  <div id="racismLevel">
+    <span>Racism Level: </span><span id="level">0</span>
+  </div>
+  <div id="racistStatements"></div>
+
+  <script>
+    const racistStatements = [
+      "Discrimination is an inherent part of society.",
+      "Certain races are superior to others.",
+      "Racial stereotypes are accurate representations.",
+      "Segregation is justifiable.",
+      "People of different races should not mix.",
+      "Interracial relationships are unacceptable.",
+      "Affirmative action is reverse racism.",
+      "Racial diversity leads to cultural dilution.",
+      "Racial purity should be maintained.",
+      "Racial profiling is an effective law enforcement strategy."
+    ];
+
+    let racismLevel = 0;
+    const levelSpan = document.getElementById('level');
+    const statementsDiv = document.getElementById('racistStatements');
+
+    function increaseRacismLevel() {
+      if (racismLevel === 0) {
+        alert("Not for snowflakes!");
+      }
+      racismLevel++;
+      levelSpan.innerText = racismLevel;
+      showRacistStatement();
+    }
+
+    function showRacistStatement() {
+      const randomIndex = Math.floor(Math.random() * racistStatements.length);
+      const racistStatement = racistStatements[randomIndex];
+      statementsDiv.innerText = racistStatement;
+    }
+  </script>
+</body>
+</html>
