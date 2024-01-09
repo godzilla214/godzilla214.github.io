@@ -1,1 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Twisted Wonderland Shop</title>
+    <style>
+        body {
+            background-image: url('https://example.com/background.jpg');
+            background-color: #262626;
+            color: #c2c2c2;
+            font-family: 'Impact', sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        
+        h1 {
+            font-size: 72px;
+            letter-spacing: 20px;
+            margin-bottom: 100px;
+            text-transform: uppercase;
+            color: #ff0000;
+            text-shadow: 5px 5px 5px #000000;
+        }
+        
+        .product {
+            display: inline-block;
+            padding: 50px;
+            background-color: #c2c2c2;
+            border-radius: 100% 40% 80% 20% / 20% 50% 40% 80%;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+            margin: 50px;
+            width: 300px;
+            transform: scale(1) rotate(45deg) translateY(30px);
+            transition: all 0.3s ease;
+        }
+        
+        .product:hover {
+            transform: scale(1.1) rotate(45deg) translateY(-20px) skew(10deg);
+            background-color: #ff0000;
+            color: #ffffff;
+            text-shadow: 2px 2px 5px #000000;
+        }
+        
+        .product h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            text-shadow: 3px 3px 3px #000000;
+        }
+        
+        .product p {
+            font-size: 20px;
+            line-height: 1.5;
+            margin-bottom: 40px;
+            font-style: italic;
+            text-shadow: 1px 1px 2px #000000;
+        }
+        
+        .add-to-cart {
+            background-color: #ff0000;
+            color: #ffffff;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-family: 'Impact', sans-serif;
+            font-size: 24px;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .add-to-cart:hover {
+            background-color: #ffffff;
+            color: #ff0000;
+            border: 3px solid #ff0000;
+            animation: shake 0.5s linear infinite;
+        }
+        
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            z-index: 9999;
+            display: none;
+        }
+        
+        .popup-text {
+            font-size: 36px;
+            text-transform: uppercase;
+        }
+        
+        .cart {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .cart-item {
+            background-color: #c2c2c2;
+            border-radius: 30px;
+            padding: 10px 20px;
+            margin: 10px;
+            color: #000000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Enter the Twisted Wonderland Shop</h1>
+    
+    <div class="product">
+        <h2>ToeJam</h2>
+        <button class="add-to-cart" onclick="addToCart('ToeJam')">Add to Cart</button>
+    </div>
+    
+    <div class="product">
+        <h2>Electric Fish</h2>
+        <button class="add-to-cart" onclick="addToCart('Electric Fish')">Add to Cart</button>
+    </div>
+    
+    <div class="product">
+        <h2>Chucky Diarrhea Powder</h2>
+        <button class="add-to-cart" onclick="addToCart('Chucky Diarrhea Powder')">Add to Cart</button>
+    </div>
+    
+    <div class="product">
+        <h2>Cursed Witch Hat</h2>
+        <button class="add-to-cart" onclick="addToCart('Cursed Witch Hat')">Add to Cart</button>
+    </div>
 
+    <div class="product">
+        <h2>Spectral Camera</h2>
+        <button class="add-to-cart" onclick="addToCart('Spectral Camera')">Add to Cart</button>
+    </div>
+    
+    <div class="product">
+        <h2>Hypnotic Pocket Watch</h2>
+        <button class="add-to-cart" onclick="addToCart('Hypnotic Pocket Watch')">Add to Cart</button>
+    </div>
+
+    <div class="popup" id="popup">
+        <p class="popup-text"></p>
+    </div>
+
+    <div class="cart">
+        <h2>Cart:</h2>
+        <div id="cartItems"></div>
+    </div>
+  
+    <script>
+        let cartItems = [];
+
+        function addToCart(item) {
+            cartItems.push(item);
+            showPopup(item + ' added to cart!');
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItemsDiv = document.getElementById('cartItems');
+            cartItemsDiv.innerHTML = '';
+
+            if (cartItems.length === 0) {
+                cartItemsDiv.innerText = 'Your cart is empty';
+                return;
+            }
+
+            cartItems.forEach((item) => {
+                const cartItemDiv = document.createElement('div');
+                cartItemDiv.classList.add('cart-item');
+                cartItemDiv.innerText = item;
+                cartItemsDiv.appendChild(cartItemDiv);
+            });
+        }
+
+        function showPopup(text) {
+            const popup = document.getElementById('popup');
+            popup.style.display = 'block';
+            popup.querySelector('.popup-text').innerText = text;
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
