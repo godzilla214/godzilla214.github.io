@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Info</title>
+  <style>
+    body {
+      background-color: #222;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+   
+    h1 {
+      font-size: 28px;
+    }
+   
+    button {
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+   
+    button:hover {
+      background-color: #45a049;
+    }
+   
+    p {
+      font-size: 20px;
+    }
+  </style>
+  <script type="text/javascript">
+    function showInfo() {
+      fetch('https://api.ipify.org/?format=json')
+        .then(response => response.json())
+        .then(data => {
+          var ipAddress = data.ip;
+          var screenWidth = window.screen.width;
+          var screenHeight = window.screen.height;
+          var screenColorDepth = window.screen.colorDepth;
+          var userAgent = window.navigator.userAgent;
+          var language = window.navigator.language;
+          var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          var deviceManufacturer = window.navigator.vendor;
+          var operatingSystem = getOperatingSystem();
+          var platform = window.navigator.platform;
+          var browserName = getBrowserName();
+          var referringURL = document.referrer;
+          var doNotTrackEnabled = (window.navigator.doNotTrack == "1" || window.doNotTrack == "yes") ? "Enabled" : "Disabled";
+          var cookiesEnabled = navigator.cookieEnabled ? "Enabled" : "Disabled";
+          var localStorageEnabled = checkLocalStorageSupport();
+          var sessionStorageEnabled = checkSessionStorageSupport();
+          var webglEnabled = getWebGLStatus();
+
+
+          document.getElementById('ip-address').innerText = ipAddress;
+          document.getElementById('screen-size').innerText = screenWidth + 'x' + screenHeight;
+          document.getElementById('screen-color-depth').innerText = screenColorDepth;
+          document.getElementById('user-agent').innerText = userAgent;
+          document.getElementById('language').innerText = language;
+          document.getElementById('timezone').innerText = timezone;
+          document.getElementById('device-manufacturer').innerText = deviceManufacturer;
+          document.getElementById('operating-system').innerText = operatingSystem;
+          document.getElementById('platform').innerText = platform;
+          document.getElementById('browser-name').innerText = browserName;
+          document.getElementById('referring-url').innerText = referringURL;
+          document.getElementById('do-not-track-enabled').innerText = doNotTrackEnabled;
+          document.getElementById('cookies-enabled').innerText = cookiesEnabled;
+          document.getElementById('local-storage-enabled').innerText = localStorageEnabled;
+          document.getElementById('session-storage-enabled').innerText = sessionStorageEnabled;
+          document.getElementById('webgl-enabled').innerText = webglEnabled;
+        })
+        .catch(error => {
+          console.log(error);
+          document.getElementById('ip-address').innerText = 'Error retrieving IP address';
+        });
+    }
+   
+    function getOperatingSystem() {
+      var userAgent = window.navigator.userAgent;
+     
+      if (userAgent.indexOf("Win") != -1) {
+        return "Windows";
+      } else if (userAgent.indexOf("Mac") != -1) {
+        return "Mac";
+      } else if (userAgent.indexOf("Linux") != -1) {
+        return "Linux";
+      } else if (userAgent.indexOf("Android") != -1) {
+        return "Android";
+      } else if (userAgent.indexOf("iOS") != -1) {
+        return "iOS";
+      } else {
+        return "Unknown";
+      }
+    }
+   
+    function getBrowserName() {
+      var userAgent = window.navigator.userAgent;
+      var browsers = {
+        firefox: /firefox/i,
+        chrome: /chrome/i,
+        safari: /safari/i,
+        edge: /edge/i,
+        opera: /opera/i,
+        ie: /internet explorer|trident/i
+      };
+     
+      for (var key in browsers) {
+        if (browsers[key].test(userAgent)) {
+          return key.charAt(0).toUpperCase() + key.slice(1);
+        }
+      }
+     
+      return "Unknown";
+    }
+   
+    function checkLocalStorageSupport() {
+      try {
+        localStorage.setItem('test', 'test');
+        localStorage.removeItem('test');
+        return "Enabled";
+      } catch (e) {
+        return "Disabled";
+      }
+    }
+   
+    function checkSessionStorageSupport() {
+      try {
+        sessionStorage.setItem('test', 'test');
+        sessionStorage.removeItem('test');
+        return "Enabled";
+      } catch (e) {
+        return "Disabled";
+      }
+    }
+   
+    function getWebGLStatus() {
+      try {
+        var canvas = document.createElement('canvas');
+        var webGLContext = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (webGLContext) {
+          var webGLRenderer = webGLContext.getParameter(webGLContext.RENDERER);
+          var webGLVersion = webGLContext.getParameter(webGLContext.VERSION);
+          return 'Enabled (Renderer: ' + webGLRenderer + ', Version: ' + webGLVersion + ')';
+        } else {
+          return 'Disabled';
+        }
+      } catch (e) {
+        return 'Unknown';
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>User Info</h1>
+  <button onclick="showInfo()">Show Info</button>
+  <p><strong>IP Address:</strong> <span id="ip-address"></span></p>
+  <p><strong>Screen Size:</strong> <span id="screen-size"></span></p>
+  <p><strong>Screen Color Depth:</strong> <span id="screen-color-depth"></span></p>
+  <p><strong>User Agent:</strong> <span id="user-agent"></span></p>
+  <p><strong>Language:</strong> <span id="language"></span></p>
+  <p><strong>Timezone:</strong> <span id="timezone"></span></p>
+  <p><strong>Device Manufacturer:</strong> <span id="device-manufacturer"></span></p>
+  <p><strong>Operating System:</strong> <span id="operating-system"></span></p>
+  <p><strong>Platform:</strong> <span id="platform"></span></p>
+  <p><strong>Browser Name:</strong> <span id="browser-name"></span></p>
+  <p><strong>Referring URL:</strong> <span id="referring-url"></span></p>
+  <p><strong>Do Not Track Enabled:</strong> <span id="do-not-track-enabled"></span></p>
+  <p><strong>Cookies Enabled:</strong> <span id="cookies-enabled"></span></p>
+  <p><strong>Local Storage Enabled:</strong> <span id="local-storage-enabled"></span></p>
+  <p><strong>Session Storage Enabled:</strong> <span id="session-storage-enabled"></span></p>
+  <p><strong>WebGL Enabled:</strong> <span id="webgl-enabled"></span></p>
+</body>
+</html>
