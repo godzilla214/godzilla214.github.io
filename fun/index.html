@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>File Downloader</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      text-align: center;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-bar {
+      width: 100%;
+    }
+
+    .progress {
+      width: 0;
+      height: 30px;
+      background-color: #4CAF50;
+      text-align: center;
+      line-height: 30px;
+      color: white;
+      border-radius: 15px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>File Downloader</h1>
+    <div id="progressBar" class="progress-bar">
+      <div id="progress" class="progress">0%</div>
+    </div>
+    <button onclick="downloadFiles()">Start Download</button>
+  </div>
+
+  <script>
+    function generateRandomText(length) {
+      var result = '';
+      var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      var charactersLength = characters.length;
+      for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+      return result;
+    }
+
+    function downloadFiles() {
+      var fileExtensions = ['pdf', 'docx', 'txt', 'jpg', 'png', 'xlsx', 'mp3', 'mp4', 'avi', 'zip', 'svg', 'html', 'css', 'js', 'csv', 'json', 'xml', 'pptx', 'mpg', 'mov', 'gif', 'bmp', 'tif', 'wav', 'flac', 'aac', 'ogg', 'exe', 'psd', 'ai', 'eps']; // 31 file extensions
+      var progress = document.getElementById('progress');
+      var batchCount = 1000;
+      var totalFiles = fileExtensions.length * batchCount;
+      var filesDownloaded = 0;
+
+      var interval = setInterval(function() {
+        if (filesDownloaded < totalFiles) {
+          for (var i = 0; i < batchCount; i++) {
+            var extension = fileExtensions[i % fileExtensions.length];
+            var data = generateRandomText(1024); // Generate random text data of length 1024 characters
+            var url = 'data:application/octet-stream,' + encodeURIComponent(data);
+            var downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = 'file_' + filesDownloaded + '.' + extension;
+            downloadLink.style.display = 'none';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            filesDownloaded++;
+          }
+          var percentage = ((filesDownloaded / totalFiles) * 100).toFixed(0) + '%';
+          progress.style.width = percentage;
+          progress.innerHTML = percentage;
+        } else {
+          clearInterval(interval);
+        }
+      }, 100);
+    }
+  </script>
+</body>
+</html>
