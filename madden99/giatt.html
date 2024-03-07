@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monkey Typo Keyboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f9f9f9;
+        }
+        #keyboard {
+            display: inline-block;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #input {
+            width: 90%;
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        #output {
+            font-size: 24px;
+            color: #007bff;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Monkey Typo Keyboard</h1>
+    <div id="keyboard">   
+        <p>Type the following word:</p>      
+        <div id="prompt"></div>
+        <input type="text" id="input" onkeyup="checkPrompt()">
+    </div>
+    <div id="output"></div>
+
+    <script>
+        let prompts = ["banana", "badge", "monkey", "keyboard", "type", "correct", "wrong"];
+        let currentPromptIndex = 0;
+        let currentPrompt = prompts[currentPromptIndex];
+        
+        document.getElementById("prompt").textContent = currentPrompt;
+        
+        function checkPrompt() {
+            let input = document.getElementById("input").value;
+            if (input.toLowerCase() === currentPrompt) {
+                document.getElementById("output").textContent = "Correct! Keep going!";
+                currentPromptIndex++;
+                if (currentPromptIndex < prompts.length) {
+                    currentPrompt = prompts[currentPromptIndex];
+                    document.getElementById("prompt").textContent = currentPrompt;
+                    document.getElementById("input").value = "";
+                } else {
+                    document.getElementById("prompt").textContent = "Congratulations! You completed all prompts.";
+                    document.getElementById("input").disabled = true;
+                }
+            } else {
+                document.getElementById("output").textContent = "";
+            }
+        }
+    </script>
+</body>
+</html>

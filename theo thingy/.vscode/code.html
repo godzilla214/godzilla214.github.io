@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Corruptor with Manual Option</title>
+    <style>
+        #container {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        img {
+            display: block;
+            margin: 20px auto;
+            border: 2px solid black;
+            padding: 10px;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+            max-width: 80%;
+            max-height: 300px;
+        }
+
+        #downloadLink {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        table td {
+            border: 1px solid #ddd;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        input[type=range] {
+            width: 80%;
+            margin-top: 20px;
+        }
+
+        input[type=text] {
+            width: 50%;
+            margin-top: 20px;
+            padding: 5px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <input type="file" id="fileInput" accept="image/*">
+        <img id="originalImg">
+        <table id="binaryTable"></table>
+        <input type="range" id="slider" min="0" max="255" value="50">
+        <img id="corruptedImg">
+        <a id="downloadLink" download="corrupted_image.jpeg">Download Corrupted Image</a>
+    </div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const originalImg = document.getElementById('originalImg');
+                const corruptedImg = document.getElementById('corruptedImg');
+                const slider = document.getElementById('slider');
+                
+                const imgData = e.target.result;
+
+                originalImg.src = imgData;
+                corruptedImg.src = corruptImage(imgData, slider.value);
+                displayBinaryData(imgData);
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        function displayBinaryData(data) {
+            const binaryTable = document.getElementById('binaryTable');
+            binaryTable.innerHTML = '';
+
+            const img = new Image();
+            img.src = data;
+
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const width = img.width;
+                const height = img.height;
+
+                canvas.width = width;
+                canvas.height = height;
+
+                ctx.drawImage(img, 0, 0); 
+                const imageData = ctx.getImageData(0, 0, width, height);
+                const pixels = imageData.data;
+
+                for (let y = 0; y < height; y++) {
+                    const row = document.createElement('tr');
+
+                    for (let x = 0; x < width; x++) {
+                        const pixelIndex = (y * width + x) * 4;
+                        const binary = (pixels[pixelIndex] & 1) + '' + (pixels[pixelIndex + 1] & 1) + '' + (pixels[pixelIndex + 2] & 1);
+                        const cell = document.createElement('td');
+                        cell.textContent = binary;
+                        row.appendChild(cell);
+                    }
+
+                    binaryTable.appendChild(row);
+                }
+            };
+        }
+
+        document.getElementById('slider').addEventListener('input', function() {
+            const slider = document.getElementById('slider');
+            const originalImg = document.getElementById('originalImg');
+            const corruptedImg = document.getElementById('corruptedImg');
+
+            corruptedImg.src = corruptImage(originalImg.src, slider.value);
+        });
+
+        function corruptImage(data, level) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.src = data;
+            const width = img.width;
+            const height = img.height;
+
+            canvas.width = width;
+            canvas.height = height;
+
+            ctx.drawImage(img, 0, 0); 
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const pixels = imageData.data;
+
+            for (let i = 0; i < pixels.length; i += 4) {
+                pixels[i] = pixels[i] & (level & 255); // Red channel
+                pixels[i + 1] = pixels[i + 1] & (level & 255); // Green channel
+                pixels[i + 2] = pixels[i + 2] & (level & 255); // Blue channel
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+            return canvas.toDataURL();
+        }
+    </script>
+</body>
+</html>

