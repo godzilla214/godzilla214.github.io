@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video and Image Player</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        #imageContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            text-align: center;
+            z-index: 1;
+        }
+        img {
+            max-width: 90%;
+            max-height: 90%;
+            margin-top: 10vh;
+            opacity: 0;
+            transition: opacity 1s;
+            object-fit: contain;
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+        img:hover {
+            transform: scale(1.1);
+        }
+        #scoreCounter, #totalScore {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 20px;
+            z-index: 2;
+            transition: transform 2s;
+        }
+        #totalScore {
+            top: 50px;
+        }
+        #newPackButton {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 2;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+        }
+        #newPackButton:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body style="background-image: url('cards/10710506_1493472034255259_7325810383935647151_o.webp');">
+    <video id="myVideo" onclick="playOrPause()">
+        <source src="" type="video/mp4">
+    </video>
+
+    <div id="imageContainer">
+        <img id="myImage"><br>
+    </div>
+
+    <div id="scoreCounter"></div>
+    <div id="totalScore">Total Score: 0</div>
+
+    <button id="newPackButton" onclick="openAnotherPack()">Open Another Pack</button>
+
+    <script>
+        var videoList = ["/cards/My Project (1).mp4","/cards/My Proje.mp4", "/cards/99pull.mp4", "/cards/thingy.mp4", "/cards/coin.mp4", "/cards/My Project (2).mp4", "cards/My Project (3).mp4"];
+        var imageList = ["/cards/87ed.png", "/cards/71bryce.png", "/cards/94butker.png", "/cards/70avery.png", "/cards/76gus.png", "/cards/77duce.png", "/cards/70amen.png", "/cards/83tj.png", "/cards/70taylor.png", "/cards/89siposs.png", "/cards/97philips.png", "/cards/82ryankelly.png", "/cards/96logan.png", "/cards/95dhopkins.png", "/cards/81kirk.png", "/cards/82debo.png", "/cards/70zubber.png", "/cards/76dylan.png", "/cards/70perine.png", "/cards/70taylor.png", "/cards/99will.png", "/cards/99biden.png", "/cards/99mahomes.png", "/cards/99vick.png", "/cards/70taylor.png"];
+        var selectedImage;
+        var totalScore = 0;
+
+        function playOrPause() {
+            var video = document.getElementById("myVideo");
+            if (video.paused) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        }
+
+        document.getElementById("myVideo").addEventListener("ended", function() {
+            document.getElementById("myImage").style.opacity = 1;
+            showRandomImage();
+            document.getElementById("myVideo").style.display = "none";
+        });
+
+        function showRandomImage() {
+            document.getElementById("imageContainer").style.display = "block";
+            var randomIndex = Math.floor(Math.random() * imageList.length);
+            var imageName = imageList[randomIndex];
+            selectedImage = imageName;
+            document.getElementById("myImage").src = imageName;
+
+            // Calculate the score based on the image file name
+            var score = parseInt(imageName.match(/\d+/)[0]) * 10;
+            spinCounter("scoreCounter", score);
+            
+            // Add score to total score
+            totalScore += score;
+            document.getElementById("totalScore").textContent = "Total Score: " + totalScore;
+            spinCounter("totalScore", totalScore);
+
+            // Add a random value from 1 to 20 to the total score
+            var randomValue = Math.floor(Math.random() * 20) + 1;
+            totalScore += randomValue;
+            document.getElementById("totalScore").textContent = "Total Score: " + totalScore + " (+" + randomValue + ")";
+            spinCounter("totalScore", totalScore);
+
+            // Start the fade-in effect
+            setTimeout(function() {
+                document.getElementById("myImage").style.opacity = 1;
+            }, 100);
+        }
+
+        function spinCounter(counterId, score) {
+            var counterElement = document.getElementById(counterId);
+            var counter = 0;
+            var increment = 10;
+            var duration = 1000;  // 2 seconds
+            var interval = duration / score;
+            
+            var timer = setInterval(() => {
+                counter += increment;
+                counterElement.textContent = counterId === "scoreCounter" ? "Score: " + counter : "Total Score: " + counter;
+                
+                if (counter >= score) {
+                    clearInterval(timer);
+                }
+            }, interval);
+        }
+
+        function openAnotherPack() {
+            document.getElementById("imageContainer").style.display = "none";
+            document.getElementById("myVideo").style.display = "block";
+            var randomVideoIndex = Math.floor(Math.random() * videoList.length);
+            document.getElementById("myVideo").src = videoList[randomVideoIndex];
+            document.getElementById("myVideo").currentTime = 0;
+            document.getElementById("myVideo").play();
+        }
+    </script>
+</body>
+</html>
