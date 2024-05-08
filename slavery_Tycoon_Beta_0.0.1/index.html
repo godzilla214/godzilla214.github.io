@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NFL Draft for Slavery</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+  <h1>Slavery Tycoon</h1>
+  <p id="day">Day: 1</p>
+  <p id="owner">Plantation owner: You</p>
+  <p id="account">Account Balance: $10000</p>
+  <p id="slaveCount">Number of Slaves: 0</p>
+  <div id="popup" class="popup"></div>
+  <ul id="draftedList" class="compact"></ul>
+  <button id="draftButton">Buy Slave</button>
+  <button id="workButton">Make Slaves Work</button>
+  <button id="breakButton">Give a Break</button>
+  <button id="extraRationsButton">Extra Rations ($1,500)</button>
+  <button id="foremanButton">Get Foreman ($3000)</button>
+  <button id="ironMikeButton">Get Iron Mike ($500,000)</button>
+  <button id="fireForemanButton">Fire Foreman</button>
+  <button id="sabrin">Get Sabrin $600,000</button>
+  <button class="scroll-to-top">Go to Top</button>
+  <!-- Hamburger menu button -->
+  <button id="toggleMenu" class="hamburger-menu">☰</button>
+</div>
+
+<!-- Slaves List (Hamburger Menu) -->
+<div id="slavesMenu" class="slaves-menu">
+  <div class="slaves-menu-content">
+    <span class="close-menu" id="closeMenu">&times;</span>
+    <ul id="draftedList" class="compact"></ul>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+document.querySelector('.scroll-to-top').addEventListener('click', () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+});
+
+document.getElementById('toggleMenu').addEventListener('click', () => {
+  document.getElementById('slavesMenu').classList.toggle('show-menu');
+});
+
+document.getElementById('closeMenu').addEventListener('click', () => {
+  document.getElementById('slavesMenu').classList.remove('show-menu');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  color: #333;
+}
+
+button {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  display: none;
+  transition: visibility 0s, opacity 0.5s linear;
+}
+
+.health-bar {
+  width: 100%;
+  background-color: #f2f2f2;
+}
+
+.health-bar.progress {
+  background-color: #4CAF50;
+}
+
+.health-bar.danger {
+  background-color: #e74c3c;
+}
+
+.health-percentage {
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.free-button {
+  background-color: #27ae60;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* Hamburger Menu Styles */
+.hamburger-menu {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.slaves-menu {
+  position: fixed;
+  top: 0;
+  left: -300px; /* Off-screen initially */
+  width: 300px;
+  height: 100%;
+  background-color: #f4f4f4;
+  transition: left 0.3s ease;
+  z-index: 1000;
+}
+
+.slaves-menu-content {
+  padding: 20px;
+}
+
+.close-menu {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.show-menu {
+  left: 0; /* Slide in the menu */
+}
+
+/* Style the slaves list */
+.slaves-menu ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.slaves-menu ul li {
+  margin-bottom: 10px;
+}
