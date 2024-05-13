@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Count Up Stats</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .count {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .stats {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .stat {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .stat h2 {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Count Up Stats</h1>
+        <p class="count" id="countup"></p>
+        <div class="stats">
+            <div class="stat">
+                <h2>Days</h2>
+                <p id="days"></p>
+            </div>
+            <div class="stat">
+                <h2>Hours</h2>
+                <p id="hours"></p>
+            </div>
+            <div class="stat">
+                <h2>Minutes</h2>
+                <p id="minutes"></p>
+            </div>
+            <div class="stat">
+                <h2>Seconds</h2>
+                <p id="seconds"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            var countUpDate = new Date("May 12, 2024 22:58:00").getTime();
+
+            var x = setInterval(function () {
+                var now = new Date().getTime();
+                var distance = now - countUpDate;
+
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("countup").innerHTML = "Counting up from May 12, 2024 10:58 PM";
+                document.getElementById("days").innerHTML = days;
+                document.getElementById("hours").innerHTML = hours;
+                document.getElementById("minutes").innerHTML = minutes;
+                document.getElementById("seconds").innerHTML = seconds;
+            }, 1000);
+        };
+    </script>
+</body>
+
+</html>
