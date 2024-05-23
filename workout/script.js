@@ -1,9 +1,12 @@
 const exercises = [
   { name: "Push-ups", reps: "15", time: 60 },
   { name: "Squats", reps: "20", time: 45 },
-  { name: "Plank", reps: "30 seconds", time: 45 },
+  { name: "Plank", reps: "45 seconds", time: 45 },
   { name: "Lunges", reps: "12 (each leg)", time: 60 },
-  { name: "Jumping Jacks", reps: "30", time: 30 },
+  { name: "Jumping Jacks", reps: "20", time: 30 },
+  { name: "Side Lunge", reps: "12 (each leg)", time: 30 },
+  { name: "Tricep Pushups", reps: "10", time: 30 },
+  { name: "Crunches", reps: "20", time: 45 },
 ];
 
 const exerciseButton = document.getElementById('exerciseButton');
