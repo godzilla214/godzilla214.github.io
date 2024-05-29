@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Exercise Generator with Timer</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.7);
+            border: none;
+            padding: 20px 40px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .play-button:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Styles for the sliding banner */
+        #songBanner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px;
+            display: none;
+            animation: slideInOut 3s ease-in-out forwards;
+        }
+
+        @keyframes slideInOut {
+            0% {
+                transform: translateY(100%);
+            }
+            5% {
+                transform: translateY(0);
+            }
+            90% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(100%);
+                opacity: 0; /* Fade out at the end of the animation */
+            }
+        }
+    </style>
+</head>
+<body style="background-image: url('/Workout/Assets/Background.gif');">
+
+<button id="exerciseButton">Generate Exercise</button>
+<div id="exerciseInfo"></div>
+<div id="timer"></div>
+
+<!-- Big Play Button -->
+<button id="playButton" class="play-button">Play Music</button>
+
+<!-- Next Song Button (initially hidden) -->
+<button id="nextButton" class="play-button" style="top: 70%; display: none;">Next Song</button>
+
+<!-- Sliding banner for song info -->
+<div id="songBanner"></div>
+
+<audio id="background-audio" loop></audio>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var audio = document.getElementById('background-audio');
+        var playButton = document.getElementById('playButton');
+        var nextButton = document.getElementById('nextButton');
+        var songBanner = document.getElementById('songBanner');
+        var audioFiles = [
+            { name: 'Final Boss', author: 'Monstercat', src: 'assets/Audio1.mp3' },
+            { name: 'Tokyo Machine', author: 'Monstercat', src: 'assets/Audio2.mp3' },
+            { name: 'Spectra', author: 'Chipzel', src: 'assets/Audio3.mp3' },
+            // Add more audio files as needed
+        ];
+        var currentIndex = -1; // Current index of the playing song
+
+        // Function to play the next song
+        function playNextSong() {
+            currentIndex = (currentIndex + 1) % audioFiles.length; // Loop back to the beginning if reached the end
+            var currentAudio = audioFiles[currentIndex];
+            audio.src = currentAudio.src;
+            audio.play().catch(function(error) {
+                console.log('Autoplay was prevented:', error);
+            });
+            updateSongBanner(currentAudio);
+        }
+
+        // Function to update the song banner
+        function updateSongBanner(audioInfo) {
+            songBanner.textContent = `Now playing: ${audioInfo.name} - ${audioInfo.author}`;
+            songBanner.style.display = 'block';
+            setTimeout(function() {
+                songBanner.style.animation = 'slideOut 0.5s ease-in-out forwards';
+                setTimeout(function() {
+                    songBanner.style.display = 'none';
+                }, 0000); // Same duration as the slideOut animation
+            }, 3000);
+        }
+
+        // Play music when the play button is clicked
+        playButton.addEventListener('click', function() {
+            playNextSong();
+            playButton.style.display = 'none'; // Hide the play button after clicking
+            nextButton.style.display = 'block'; // Show the next button after clicking play
+        });
+
+        // Play next song when the next button is clicked
+        nextButton.addEventListener('click', function() {
+            playNextSong();
+        });
+
+        // Play next song when the current song ends
+        audio.addEventListener('ended', function() {
+            playNextSong();
+        });
+    });
+</script>
+<script src="script.js"></script>
+</body>
+</html>
