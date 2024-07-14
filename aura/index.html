@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Gambling Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #333;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+        .neon-glow {
+            color: #fff;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            transition: text-shadow 0.5s ease-in-out;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #444;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+        }
+        #aura-display {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        #biometrics-input {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        #biometrics-input input[type="number"] {
+            font-size: 1rem;
+            padding: 10px;
+            width: 100px;
+            border-radius: 5px;
+            border: 1px solid #fff;
+            background-color: #555;
+            color: #fff;
+        }
+        #start-button, #bet-button {
+            font-size: 1rem;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #start-button:hover, #bet-button:hover {
+            background-color: #218838;
+        }
+        #bet-input {
+            font-size: 1rem;
+            padding: 10px;
+            width: 100px;
+            border-radius: 5px;
+            border: 1px solid #fff;
+            background-color: #555;
+            color: #fff;
+        }
+        #bet-button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        #slots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .slot {
+            font-size: 2rem;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            background-color: #555;
+        }
+        #message {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            white-space: pre-line;
+        }
+        #rules {
+            font-size: 1rem;
+            background-color: #555;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        #rules h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        #rules ul {
+            margin-left: 20px;
+            list-style-type: disc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span id="aura-text" class="neon-glow">Aura</span> Gambling Game</h1>
+        <div id="rules">
+            <h2>Game Rules</h2>
+            <p>Welcome to the Aura Gambling Game! You start with aura based on your height and weight. Place your bet and spin the slots to see if you win or lose aura.</p>
+            <ul>
+                <li><b>/2</b>: Halves the value of the next slot</li>
+                <li><b>x2</b>: Doubles the value of the next slot</li>
+                <li><b>x10</b>: Multiplies the value of the next slot by 10</li>
+                <li><b>+1000</b>: Adds 1000 to the value of the next slot</li>
+                <li><b>-100000</b>: Subtracts 100000 from the value of the next slot</li>
+                <li><b>/3</b>: Divides the value of the next slot by 3</li>
+                <li><b>x3</b>: Triples the value of the next slot</li>
+                <li><b>x5</b>: Multiplies the value of the next slot by 5</li>
+                <li><b>+500</b>: Adds 500 to the value of the next slot</li>
+                <li><b>-50000</b>: Subtracts 50000 from the value of the next slot</li>
+                <li><b>+250</b>: Adds 250 to the value of the next slot</li>
+                <li><b>-25000</b>: Subtracts 25000 from the value of the next slot</li>
+                <li><b>x1.5</b>: Multiplies the value of the next slot by 1.5</li>
+                <li><b>-1</b>: Subtracts 1 from the value of the next slot</li>
+                <li><b>+100</b>: Adds 100 to the value of the next slot</li>
+            </ul>
+            <p>Minimum bet: 100 aura</p>
+        </div>
+        <div id="biometrics-input">
+            <input type="number" id="height-feet-input" placeholder="Feet" min="1">
+            <input type="number" id="height-inches-input" placeholder="Inches" min="0" max="11">
+            <input type="number" id="weight-input" placeholder="Weight (lbs)" min="10">
+            <button id="start-button">Start Game</button>
+        </div>
+        <div id="aura-display"></div>
+        <input type="number" id="bet-input" placeholder="Enter your bet" min="100" disabled>
+        <button id="bet-button" disabled>Bet</button>
+        <div id="slots">
+            <div class="slot" id="slot1">?</div>
+            <div class="slot" id="slot2">?</div>
+            <div class="slot" id="slot3">?</div>
+        </div>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        let aura = 0;
+
+        const actions = ["/2", "x2", "x10", "+1000", "-100000", "/3", "x3", "x5", "+500", "-50000", "+250", "-25000", "x1.5", "-1", "+100"];
+        const probabilities = [10, 15, 3, 5, 1, 7, 5, 5, 10, 2, 5, 2, 10, 10, 10]; // Probabilities for each action in %
+
+        function getSlotResult() {
+            let rand = Math.random() * 100;
+            let cumulativeProbability = 0;
+            for (let i = 0; i < actions.length; i++) {
+                cumulativeProbability += probabilities[i];
+                if (rand < cumulativeProbability) {
+                    return actions[i];
+                }
+            }
+        }
+
+        function applyAction(value, action) {
+            let result = value;
+            switch (action) {
+                case "/2":
+                    result = Math.round(result / 2);
+                    break;
+                case "x2":
+                    result = Math.round(result * 2);
+                    break;
+                case "x10":
+                    result = Math.round(result * 10);
+                    break;
+                case "+1000":
+                    result = Math.round(result + 1000);
+                    break;
+                case "-100000":
+                    result = Math.round(result - 100000);
+                    break;
+                case "/3":
+                    result = Math.round(result / 3);
+                    break;
+                case "x3":
+                    result = Math.round(result * 3);
+                    break;
+                case "x5":
+                    result = Math.round(result * 5);
+                    break;
+                case "+500":
+                    result = Math.round(result + 500);
+                    break;
+                case "-50000":
+                    result = Math.round(result - 50000);
+                    break;
+                case "+250":
+                    result = Math.round(result + 250);
+                    break;
+                case "-25000":
+                    result = Math.round(result - 25000);
+                    break;
+                case "x1.5":
+                    result = Math.round(result * 1.5);
+                    break;
+                case "-1":
+                    result = Math.round(result - 1);
+                    break;
+                case "+100":
+                    result = Math.round(result + 100);
+                    break;
+            }
+            return result;
+        }
+
+        function calculateAura(bmi) {
+            if (bmi < 16) return 500;
+            if (bmi < 17) return 1000;
+            if (bmi < 18.5) return 1500;
+            if (bmi < 25) return 2000;
+            if (bmi < 30) return 1000;
+            if (bmi < 35) return 500;
+            if (bmi < 40) return 250;
+            return 100;
+        }
+
+        function updateGlowEffect(aura) {
+            const glowStrength = Math.min(1 + aura / 1000, 5);
+            document.getElementById('aura-text').style.textShadow = `0 0 ${glowStrength * 5}px rgba(255,255,255,${glowStrength * 0.2})`;
+        }
+
+        function updateAuraDisplay() {
+            document.getElementById('aura-display').innerText = `Aura: ${aura}`;
+            updateGlowEffect(aura);
+        }
+
+        function spinSlot(slotElement, value, callback) {
+            slotElement.innerText = getSlotResult();
+            setTimeout(() => {
+                const result = slotElement.innerText;
+                const finalValue = applyAction(value, result);
+                callback(finalValue);
+            }, 1500); // Adjust this duration as needed
+        }
+
+        document.getElementById('start-button').addEventListener('click', function() {
+            let feet = parseInt(document.getElementById('height-feet-input').value);
+            let inches = parseInt(document.getElementById('height-inches-input').value);
+            let weight = parseInt(document.getElementById('weight-input').value);
+
+            if (isNaN(feet) || isNaN(inches) || isNaN(weight) || feet < 1 || inches < 0 || inches > 11 || weight < 10) {
+                document.getElementById('message').innerText = "Please enter valid height and weight.";
+                return;
+            }
+
+            // Convert height to meters for BMI calculation
+            let heightInMeters = ((feet * 30.48) + (inches * 2.54)) / 100;
+            let bmi = weight / (heightInMeters * heightInMeters);
+
+            // Calculate aura based on BMI
+            aura = calculateAura(bmi);
+
+            updateAuraDisplay();
+            updateGlowEffect(aura);
+
+            document.getElementById('bet-input').disabled = false;
+            document.getElementById('bet-button').disabled = false;
+            document.getElementById('biometrics-input').style.display = 'none';
+            document.getElementById('message').innerText = "";
+        });
+
+        document.getElementById('bet-button').addEventListener('click', function() {
+            let bet = parseInt(document.getElementById('bet-input').value);
+            if (isNaN(bet) || bet < 100) {
+                document.getElementById('message').innerText = "Please enter a valid bet (minimum 100 aura).";
+                return;
+            }
+            if (bet > aura) {
+                document.getElementById('message').innerText = "You don't have enough aura to make this bet.";
+                return;
+            }
+
+            document.getElementById('message').innerText = "";
+
+            spinSlot(document.getElementById('slot1'), bet, (value1) => {
+                document.getElementById('message').innerText = `Slot 1: ${value1}`;
+                spinSlot(document.getElementById('slot2'), value1, (value2) => {
+                    document.getElementById('message').innerText += `\nSlot 2: ${value2}`;
+                    spinSlot(document.getElementById('slot3'), value2, (value3) => {
+                        document.getElementById('message').innerText += `\nSlot 3: ${value3}`;
+                        aura -= bet; // Deduct the bet amount
+                        aura += value3; // Add the final slot value
+                        updateAuraDisplay();
+
+                        if (aura <= 0) {
+                            document.getElementById('message').innerText += "\nGame over!";
+                            document.getElementById('bet-button').disabled = true;
+                            document.getElementById('bet-input').disabled = true;
+                        }
+
+                        // Update glow effect based on updated aura
+                        updateGlowEffect(aura);
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
