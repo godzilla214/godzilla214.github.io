@@ -27,12 +27,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9));
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9));
             z-index: -1;
         }
 
         .container {
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.85);
             padding: 20px;
             border-radius: 10px;
             text-align: center;
@@ -161,6 +161,7 @@
         <button id="playButton" class="button">Play Music</button>
         <button id="nextButton" class="button" style="display: none;">Next Song</button>
         <button id="prevButton" class="button" style="display: none;">Previous Song</button>
+        <button id="shuffleButton" class="button" style="display: none;">Shuffle Songs</button>
 
         <div id="songButtons"></div>
         <div id="songBanner"></div>
@@ -169,51 +170,71 @@
             <input type="range" class="progress-bar" id="progressBar" min="0" max="100" value="0">
         </div>
 
-        <audio id="background-audio" loop></audio>
+        <audio id="audio">
+            <source class="active" src="Audio1.mp3" type="audio/mpeg" data-name="Final Boss" data-author="Monstercat">
+            <source src="Audio2.mp3" type="audio/mpeg" data-name="Tokyo Machine" data-author="Monstercat">
+            <source src="Audio3.mp3" type="audio/mpeg" data-name="Spectra" data-author="Chipzel">
+        </audio>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var audio = document.getElementById('background-audio');
+            var audioElement = document.getElementById('audio');
             var playButton = document.getElementById('playButton');
             var nextButton = document.getElementById('nextButton');
             var prevButton = document.getElementById('prevButton');
+            var shuffleButton = document.getElementById('shuffleButton');
             var songBanner = document.getElementById('songBanner');
             var songButtonsDiv = document.getElementById('songButtons');
             var progressBar = document.getElementById('progressBar');
-            var audioFiles = [
-                { name: 'Final Boss', author: 'Monstercat', src: 'Audio1.mp3' },
-                { name: 'Tokyo Machine', author: 'Monstercat', src: 'Audio2.mp3' },
-                { name: 'Spectra', author: 'Chipzel', src: 'Audio3.mp3' },
-                // Add more audio files as needed
-            ];
-            var currentIndex = -1;
-            var isPlaying = false;
-            var userSeeking = false;
+            var sources = audioElement.getElementsByTagName('source');
+            var currentIndex = 0;
 
-            function playSong(index) {
-                currentIndex = index;
-                var currentAudio = audioFiles[currentIndex];
-                audio.src = currentAudio.src;
-                audio.play().catch(function(error) {
+            function playAudio(index) {
+                var activeSource = sources[index];
+                audioElement.src = activeSource.src;
+                audioElement.play().catch(function(error) {
                     console.log('Autoplay was prevented:', error);
                 });
-                updateSongBanner(currentAudio);
-                isPlaying = true;
+                updateSongBanner(activeSource);
+                updateActiveSource(index);
             }
 
             function playNextSong() {
-                currentIndex = (currentIndex + 1) % audioFiles.length;
-                playSong(currentIndex);
+                currentIndex = (currentIndex + 1) % sources.length;
+                playAudio(currentIndex);
             }
 
             function playPrevSong() {
-                currentIndex = (currentIndex - 1 + audioFiles.length) % audioFiles.length;
-                playSong(currentIndex);
+                currentIndex = (currentIndex - 1 + sources.length) % sources.length;
+                playAudio(currentIndex);
             }
 
-            function updateSongBanner(audioInfo) {
-                songBanner.textContent = `Now playing: ${audioInfo.name} - ${audioInfo.author}`;
+            function shuffleSongs() {
+                var array = Array.from(sources);
+                for (var i = array.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var temp = array[i];
+                    array[i] = array[j];
+                    array[j] = temp;
+                }
+                for (var k = 0; k < array.length; k++) {
+                    audioElement.appendChild(array[k]);
+                }
+                currentIndex = 0;
+                updateSongButtons();
+            }
+
+            function updateActiveSource(index) {
+                Array.prototype.forEach.call(sources, function(source, i) {
+                    source.className = i === index ? 'active' : '';
+                });
+            }
+
+            function updateSongBanner(source) {
+                var songName = source.getAttribute('data-name');
+                var songAuthor = source.getAttribute('data-author');
+                songBanner.textContent = `Now playing: ${songName} - ${songAuthor}`;
                 songBanner.classList.remove('slide-out');
                 songBanner.classList.add('slide-in');
                 songBanner.style.display = 'block';
@@ -223,15 +244,28 @@
                 }, 3000);
             }
 
+            function updateSongButtons() {
+                songButtonsDiv.innerHTML = '';
+                Array.prototype.forEach.call(sources, function(source, index) {
+                    var button = document.createElement('button');
+                    var songName = source.getAttribute('data-name');
+                    var songAuthor = source.getAttribute('data-author');
+                    button.textContent = `${songName} - ${songAuthor}`;
+                    button.classList.add('song-button');
+                    button.addEventListener('click', function() {
+                        currentIndex = index;
+                        playAudio(index);
+                    });
+                    songButtonsDiv.appendChild(button);
+                });
+            }
+
             playButton.addEventListener('click', function() {
-                if (!isPlaying) {
-                    playNextSong();
-                    playButton.style.display = 'none';
-                    nextButton.style.display = 'inline-block';
-                    prevButton.style.display = 'inline-block';
-                } else {
-                    audio.play();
-                }
+                playAudio(currentIndex);
+                playButton.style.display = 'none';
+                nextButton.style.display = 'inline-block';
+                prevButton.style.display = 'inline-block';
+                shuffleButton.style.display = 'inline-block';
             });
 
             nextButton.addEventListener('click', function() {
@@ -242,168 +276,137 @@
                 playPrevSong();
             });
 
-            audio.addEventListener('ended', function() {
+            shuffleButton.addEventListener('click', function() {
+                shuffleSongs();
+            });
+
+            audioElement.addEventListener('ended', function() {
                 playNextSong();
             });
 
-            audioFiles.forEach(function(song, index) {
-                var button = document.createElement('button');
-                button.textContent = `${song.name} - ${song.author}`;
-                button.classList.add('song-button');
-                button.addEventListener('click', function() {
-                    playSong(index);
-                });
-                songButtonsDiv.appendChild(button);
+            // Update progress bar
+            audioElement.addEventListener('timeupdate', function() {
+                var value = (audioElement.currentTime / audioElement.duration) * 100;
+                progressBar.value = value;
             });
 
-            // Update progress bar based on audio time
-            audio.addEventListener('timeupdate', function() {
-                if (!userSeeking) {
-                    var progress = (audio.currentTime / audio.duration) * 100;
-                    progressBar.value = progress;
-                }
-            });
-
-            // Change audio playback position based on progress bar
+            // Seek audio when progress bar is clicked or dragged
             progressBar.addEventListener('input', function() {
-                var seekTime = (progressBar.value * audio.duration) / 100;
-                audio.currentTime = seekTime;
-                userSeeking = true;
-
-                // If audio is paused and user seeks, resume playing
-                if (audio.paused) {
-                    audio.play();
-                }
+                var time = (progressBar.value / 100) * audioElement.duration;
+                audioElement.currentTime = time;
             });
 
-            // Handle when user finishes seeking
-            progressBar.addEventListener('change', function() {
-                userSeeking = false;
+            // Particle background
+            var canvas = document.getElementById('particleCanvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            var particlesArray = [];
+            var mouse = {
+                x: null,
+                y: null,
+                radius: (canvas.height / 80) * (canvas.width / 80)
+            };
+
+            window.addEventListener('mousemove', function(event) {
+                mouse.x = event.x;
+                mouse.y = event.y;
             });
-        });
 
-        // Particle background script
-        const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        let particlesArray;
-        let spawnInterval;
-
-        // Get mouse position
-        let mouse = {
-            x: null,
-            y: null,
-            radius: (canvas.height / 80) * (canvas.width / 80)
-        }
-
-        window.addEventListener('mousemove', function(event) {
-            mouse.x = event.x;
-            mouse.y = event.y;
-        });
-
-        // Create particle object
-        class Particle {
-            constructor(x, y, directionX, directionY, size, color) {
-                this.x = x;
-                this.y = y;
-                this.directionX = directionX;
-                this.directionY = directionY;
-                this.size = size;
-                this.color = color;
-            }
-
-            // Method to draw individual particle
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-            }
-
-            // Check particle position, check mouse position, move the particle, draw the particle
-            update() {
-                // Check if particle is within mouse radius
-                let dx = this.x - mouse.x;
-                let dy = this.y - mouse.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < mouse.radius + this.size) {
-                    // Particle is within the mouse radius, calculate new direction to bounce off
-                    let angle = Math.atan2(dy, dx);
-                    this.directionX = Math.cos(angle);
-                    this.directionY = Math.sin(angle);
-                } else {
-                    // Particle is outside the mouse radius, move in original direction
-                    this.directionX = this.directionX;
-                    this.directionY = this.directionY;
+            class Particle {
+                constructor(x, y, directionX, directionY, size, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.directionX = directionX;
+                    this.directionY = directionY;
+                    this.size = size;
+                    this.color = color;
                 }
 
-                // Move particle
-                this.x += this.directionX;
-                this.y += this.directionY;
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                    ctx.fillStyle = '#fff';
+                    ctx.fill();
+                }
 
-                // Draw particle
-                this.draw();
+                update() {
+                    let dx = this.x - mouse.x;
+                    let dy = this.y - mouse.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < mouse.radius + this.size) {
+                        let angle = Math.atan2(dy, dx);
+                        this.directionX = Math.cos(angle);
+                        this.directionY = Math.sin(angle);
+                    }
+
+                    this.x += this.directionX;
+                    this.y += this.directionY;
+
+                    if (this.x > canvas.width || this.x < 0) {
+                        this.directionX = -this.directionX;
+                    }
+                    if (this.y > canvas.height || this.y < 0) {
+                        this.directionY = -this.directionY;
+                    }
+
+                    this.draw();
+                }
             }
-        }
 
-        // Create particle array
-        function init() {
-            particlesArray = [];
-            let numberOfParticles = (canvas.height * canvas.width) / 9000;
-            for (let i = 0; i < numberOfParticles; i++) {
-                let size = (Math.random() * 5) + 1;
-                let x = (Math.random() * (window.innerWidth - size * 2));
-                let y = (Math.random() * (window.innerHeight - size * 2));
-                let directionX = (Math.random() * 5) - 2.5;
-                let directionY = (Math.random() * 5) - 2.5;
-                let color = '#fff';
+            function init() {
+                particlesArray = [];
+                let numberOfParticles = (canvas.height * canvas.width) / 9000;
+                for (let i = 0; i < numberOfParticles; i++) {
+                    let size = (Math.random() * 5) + 1;
+                    let x = (Math.random() * (window.innerWidth - size * 2));
+                    let y = (Math.random() * (window.innerHeight - size * 2));
+                    let directionX = (Math.random() * 5) - 2.5;
+                    let directionY = (Math.random() * 5) - 2.5;
+                    let color = '#fff';
 
-                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+                    particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+                }
+
+                setInterval(function() {
+                    let size = (Math.random() * 5) + 1;
+                    let x = (Math.random() * (window.innerWidth - size * 2));
+                    let y = (Math.random() * (window.innerHeight - size * 2));
+                    let directionX = (Math.random() * 5) - 2.5;
+                    let directionY = (Math.random() * 5) - 2.5;
+                    let color = '#fff';
+
+                    particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+                }, 100);
             }
 
-            // Start interval for spawning new particles
-            spawnInterval = setInterval(function() {
-                let size = (Math.random() * 5) + 1;
-                let x = (Math.random() * (window.innerWidth - size * 2));
-                let y = (Math.random() * (window.innerHeight - size * 2));
-                let directionX = (Math.random() * 5) - 2.5;
-                let directionY = (Math.random() * 5) - 2.5;
-                let color = '#fff';
+            function animate() {
+                requestAnimationFrame(animate);
+                ctx.clearRect(0, 0, innerWidth, innerHeight);
 
-                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
-            }, 100); // Adjust spawn rate as needed
-        }
-
-        // Animate particles
-        function animate() {
-            requestAnimationFrame(animate);
-            ctx.clearRect(0, 0, innerWidth, innerHeight);
-
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                }
             }
-        }
 
-        // Resize event
-        window.addEventListener('resize', function() {
-            canvas.width = innerWidth;
-            canvas.height = innerHeight;
-            mouse.radius = (canvas.height / 80) * (canvas.width / 80);
+            window.addEventListener('resize', function() {
+                canvas.width = innerWidth;
+                canvas.height = innerHeight;
+                mouse.radius = (canvas.height / 80) * (canvas.width / 80);
+                init();
+            });
+
+            window.addEventListener('mouseout', function() {
+                mouse.x = undefined;
+                mouse.y = undefined;
+            });
+
             init();
+            animate();
+            updateSongButtons();
         });
-
-        // Mouse out event
-        window.addEventListener('mouseout', function() {
-            mouse.x = undefined;
-            mouse.y = undefined;
-        });
-
-        init();
-        animate();
     </script>
 </body>
 </html>
