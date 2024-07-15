@@ -211,6 +211,11 @@
             <button id="pauseButton" class="pause-button" style="display: none;">||</button>
         </div>
 
+        <div class="pitch-control">
+            <label for="pitchSlider">Pitch:</label>
+            <input type="range" id="pitchSlider" min="0.1" max="5" step="0.01" value="1">
+        </div>
+
         <div class="speed-control">
             <label for="speedSlider">Speed:</label>
             <input type="range" id="speedSlider" min="0.5" max="2" step="0.1" value="1">
@@ -228,7 +233,7 @@
             <source src="Audio9.mp3" type="audio/mpeg" data-name="E-ER" data-author="Lil Yachty">
         </audio>
     </div>
-
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var audioElement = document.getElementById('audio');
@@ -241,6 +246,7 @@
             var songButtonsDiv = document.getElementById('songButtons');
             var progressBar = document.getElementById('progressBar');
             var speedSlider = document.getElementById('speedSlider');
+            var pitchSlider = document.getElementById('pitchSlider');
             var sources = audioElement.getElementsByTagName('source');
             var currentIndex = 0;
 
@@ -472,6 +478,13 @@
             window.addEventListener('mouseout', function() {
                 mouse.x = undefined;
                 mouse.y = undefined;
+            });
+
+            pitchSlider.addEventListener('input', function() {
+                var pitchValue = pitchSlider.value;
+                var playbackRate = speedSlider.value;
+                audioElement.playbackRate = playbackRate * pitchValue;
+                audioElement.preservesPitch = false; // Ensure pitch adjustment is enabled
             });
 
             init();
