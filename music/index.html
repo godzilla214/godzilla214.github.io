@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: url('Background.gif') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Roboto', sans-serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9));
+            z-index: -1;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .button {
+            background-color: #1DB954;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #1ed760;
+        }
+
+        .song-button {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: block;
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .song-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        #songBanner {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+            position: fixed;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s forwards;
+        }
+
+        .slide-out {
+            animation: slideOut 0.5s forwards;
+        }
+
+        @keyframes slideIn {
+            0% {
+                bottom: -50px;
+                opacity: 0;
+            }
+            100% {
+                bottom: 20px;
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            0% {
+                bottom: 20px;
+                opacity: 1;
+            }
+            100% {
+                bottom: -50px;
+                opacity: 0;
+            }
+        }
+
+        /* Progress bar styles */
+        .progress-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.3);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            background-color: #1DB954;
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        /* Canvas for particles */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+    <div class="container">
+        <button id="playButton" class="button">Play Music</button>
+        <button id="nextButton" class="button" style="display: none;">Next Song</button>
+        <button id="prevButton" class="button" style="display: none;">Previous Song</button>
+
+        <div id="songButtons"></div>
+        <div id="songBanner"></div>
+
+        <div class="progress-container">
+            <input type="range" class="progress-bar" id="progressBar" min="0" max="100" value="0">
+        </div>
+
+        <audio id="background-audio" loop></audio>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var audio = document.getElementById('background-audio');
+            var playButton = document.getElementById('playButton');
+            var nextButton = document.getElementById('nextButton');
+            var prevButton = document.getElementById('prevButton');
+            var songBanner = document.getElementById('songBanner');
+            var songButtonsDiv = document.getElementById('songButtons');
+            var progressBar = document.getElementById('progressBar');
+            var audioFiles = [
+                { name: 'Final Boss', author: 'Monstercat', src: 'Audio1.mp3' },
+                { name: 'Tokyo Machine', author: 'Monstercat', src: 'Audio2.mp3' },
+                { name: 'Spectra', author: 'Chipzel', src: 'Audio3.mp3' },
+                // Add more audio files as needed
+            ];
+            var currentIndex = -1;
+            var isPlaying = false;
+            var userSeeking = false;
+
+            function playSong(index) {
+                currentIndex = index;
+                var currentAudio = audioFiles[currentIndex];
+                audio.src = currentAudio.src;
+                audio.play().catch(function(error) {
+                    console.log('Autoplay was prevented:', error);
+                });
+                updateSongBanner(currentAudio);
+                isPlaying = true;
+            }
+
+            function playNextSong() {
+                currentIndex = (currentIndex + 1) % audioFiles.length;
+                playSong(currentIndex);
+            }
+
+            function playPrevSong() {
+                currentIndex = (currentIndex - 1 + audioFiles.length) % audioFiles.length;
+                playSong(currentIndex);
+            }
+
+            function updateSongBanner(audioInfo) {
+                songBanner.textContent = `Now playing: ${audioInfo.name} - ${audioInfo.author}`;
+                songBanner.classList.remove('slide-out');
+                songBanner.classList.add('slide-in');
+                songBanner.style.display = 'block';
+                setTimeout(function() {
+                    songBanner.classList.remove('slide-in');
+                    songBanner.classList.add('slide-out');
+                }, 3000);
+            }
+
+            playButton.addEventListener('click', function() {
+                if (!isPlaying) {
+                    playNextSong();
+                    playButton.style.display = 'none';
+                    nextButton.style.display = 'inline-block';
+                    prevButton.style.display = 'inline-block';
+                } else {
+                    audio.play();
+                }
+            });
+
+            nextButton.addEventListener('click', function() {
+                playNextSong();
+            });
+
+            prevButton.addEventListener('click', function() {
+                playPrevSong();
+            });
+
+            audio.addEventListener('ended', function() {
+                playNextSong();
+            });
+
+            audioFiles.forEach(function(song, index) {
+                var button = document.createElement('button');
+                button.textContent = `${song.name} - ${song.author}`;
+                button.classList.add('song-button');
+                button.addEventListener('click', function() {
+                    playSong(index);
+                });
+                songButtonsDiv.appendChild(button);
+            });
+
+            // Update progress bar based on audio time
+            audio.addEventListener('timeupdate', function() {
+                if (!userSeeking) {
+                    var progress = (audio.currentTime / audio.duration) * 100;
+                    progressBar.value = progress;
+                }
+            });
+
+            // Change audio playback position based on progress bar
+            progressBar.addEventListener('input', function() {
+                var seekTime = (progressBar.value * audio.duration) / 100;
+                audio.currentTime = seekTime;
+                userSeeking = true;
+
+                // If audio is paused and user seeks, resume playing
+                if (audio.paused) {
+                    audio.play();
+                }
+            });
+
+            // Handle when user finishes seeking
+            progressBar.addEventListener('change', function() {
+                userSeeking = false;
+            });
+        });
+
+        // Particle background script
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray;
+        let spawnInterval;
+
+        // Get mouse position
+        let mouse = {
+            x: null,
+            y: null,
+            radius: (canvas.height / 80) * (canvas.width / 80)
+        }
+
+        window.addEventListener('mousemove', function(event) {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+
+        // Create particle object
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+            }
+
+            // Method to draw individual particle
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+
+            // Check particle position, check mouse position, move the particle, draw the particle
+            update() {
+                // Check if particle is within mouse radius
+                let dx = this.x - mouse.x;
+                let dy = this.y - mouse.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < mouse.radius + this.size) {
+                    // Particle is within the mouse radius, calculate new direction to bounce off
+                    let angle = Math.atan2(dy, dx);
+                    this.directionX = Math.cos(angle);
+                    this.directionY = Math.sin(angle);
+                } else {
+                    // Particle is outside the mouse radius, move in original direction
+                    this.directionX = this.directionX;
+                    this.directionY = this.directionY;
+                }
+
+                // Move particle
+                this.x += this.directionX;
+                this.y += this.directionY;
+
+                // Draw particle
+                this.draw();
+            }
+        }
+
+        // Create particle array
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 5) + 1;
+                let x = (Math.random() * (window.innerWidth - size * 2));
+                let y = (Math.random() * (window.innerHeight - size * 2));
+                let directionX = (Math.random() * 5) - 2.5;
+                let directionY = (Math.random() * 5) - 2.5;
+                let color = '#fff';
+
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+
+            // Start interval for spawning new particles
+            spawnInterval = setInterval(function() {
+                let size = (Math.random() * 5) + 1;
+                let x = (Math.random() * (window.innerWidth - size * 2));
+                let y = (Math.random() * (window.innerHeight - size * 2));
+                let directionX = (Math.random() * 5) - 2.5;
+                let directionY = (Math.random() * 5) - 2.5;
+                let color = '#fff';
+
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }, 100); // Adjust spawn rate as needed
+        }
+
+        // Animate particles
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+        }
+
+        // Resize event
+        window.addEventListener('resize', function() {
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            mouse.radius = (canvas.height / 80) * (canvas.width / 80);
+            init();
+        });
+
+        // Mouse out event
+        window.addEventListener('mouseout', function() {
+            mouse.x = undefined;
+            mouse.y = undefined;
+        });
+
+        init();
+        animate();
+    </script>
+</body>
+</html>
