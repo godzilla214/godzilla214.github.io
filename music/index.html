@@ -125,6 +125,8 @@
         .progress-container {
             width: 80%;
             margin: 20px auto;
+            display: flex;
+            align-items: center;
         }
 
         .progress-bar {
@@ -133,6 +135,7 @@
             background-color: rgba(255, 255, 255, 0.3);
             position: relative;
             cursor: pointer;
+            margin-right: 10px;
         }
 
         .progress-bar-inner {
@@ -142,6 +145,42 @@
             top: 0;
             left: 0;
             pointer-events: none;
+        }
+
+        /* Pause button styles */
+        .pause-button {
+            background-color: #1DB954;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        .pause-button:hover {
+            background-color: #1ed760;
+        }
+
+        /* Speed control styles */
+        .speed-control {
+            width: 80%;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .speed-control label {
+            margin-right: 10px;
+        }
+
+        .speed-control input {
+            width: 100%;
         }
 
         /* Canvas for particles */
@@ -168,6 +207,12 @@
 
         <div class="progress-container">
             <input type="range" class="progress-bar" id="progressBar" min="0" max="100" value="0">
+            <button id="pauseButton" class="pause-button" style="display: none;">||</button>
+        </div>
+
+        <div class="speed-control">
+            <label for="speedSlider">Speed:</label>
+            <input type="range" id="speedSlider" min="0.5" max="2" step="0.1" value="1">
         </div>
 
         <audio id="audio">
@@ -184,12 +229,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             var audioElement = document.getElementById('audio');
             var playButton = document.getElementById('playButton');
+            var pauseButton = document.getElementById('pauseButton');
             var nextButton = document.getElementById('nextButton');
             var prevButton = document.getElementById('prevButton');
             var shuffleButton = document.getElementById('shuffleButton');
             var songBanner = document.getElementById('songBanner');
             var songButtonsDiv = document.getElementById('songButtons');
             var progressBar = document.getElementById('progressBar');
+            var speedSlider = document.getElementById('speedSlider');
             var sources = audioElement.getElementsByTagName('source');
             var currentIndex = 0;
 
@@ -201,6 +248,8 @@
                 });
                 updateSongBanner(activeSource);
                 updateActiveSource(index);
+                pauseButton.style.display = 'inline-block';
+                playButton.style.display = 'none';
             }
 
             function playNextSong() {
@@ -271,6 +320,16 @@
                 shuffleButton.style.display = 'inline-block';
             });
 
+            pauseButton.addEventListener('click', function() {
+                if (audioElement.paused) {
+                    audioElement.play();
+                    pauseButton.textContent = '||';
+                } else {
+                    audioElement.pause();
+                    pauseButton.textContent = '>';
+                }
+            });
+
             nextButton.addEventListener('click', function() {
                 playNextSong();
             });
@@ -297,6 +356,11 @@
             progressBar.addEventListener('input', function() {
                 var time = (progressBar.value / 100) * audioElement.duration;
                 audioElement.currentTime = time;
+            });
+
+            // Update playback speed
+            speedSlider.addEventListener('input', function() {
+                audioElement.playbackRate = speedSlider.value;
             });
 
             // Particle background
