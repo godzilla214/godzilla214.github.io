@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Effect with Sound</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: black;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="fireCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('fireCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const firePixelsArray = [];
+        const fireWidth = Math.floor(canvas.width / 10);
+        const fireHeight = Math.floor(canvas.height / 10);
+        const fireColorsPalette = [
+            [7, 7, 7],
+            [31, 7, 7],
+            [47, 15, 7],
+            [71, 15, 7],
+            [87, 23, 7],
+            [103, 31, 7],
+            [119, 31, 7],
+            [143, 39, 7],
+            [159, 47, 7],
+            [175, 63, 7],
+            [191, 71, 7],
+            [199, 71, 7],
+            [223, 79, 7],
+            [223, 87, 7],
+            [223, 87, 7],
+            [215, 95, 7],
+            [215, 95, 7],
+            [215, 103, 15],
+            [207, 111, 15],
+            [207, 119, 15],
+            [207, 127, 15],
+            [207, 135, 23],
+            [199, 135, 23],
+            [199, 143, 23],
+            [199, 151, 31],
+            [191, 159, 31],
+            [191, 159, 31],
+            [191, 167, 39],
+            [191, 167, 39],
+            [191, 175, 47],
+            [183, 175, 47],
+            [183, 183, 47],
+            [183, 183, 55],
+            [207, 207, 111],
+            [223, 223, 159],
+            [239, 239, 199],
+            [255, 255, 255]
+        ];
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let fireSoundBuffer;
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = 0.1; // Lower volume
+
+        function createFireDataStructure() {
+            const numberOfPixels = fireWidth * fireHeight;
+            for (let i = 0; i < numberOfPixels; i++) {
+                firePixelsArray[i] = 0;
+            }
+        }
+
+        function calculateFirePropagation() {
+            for (let column = 0; column < fireWidth; column++) {
+                for (let row = 0; row < fireHeight; row++) {
+                    const pixelIndex = column + (fireWidth * row);
+                    updateFireIntensityPerPixel(pixelIndex);
+                }
+            }
+            renderFire();
+            drawText();
+            playFireSound();
+        }
+
+        function updateFireIntensityPerPixel(currentPixelIndex) {
+            const belowPixelIndex = currentPixelIndex + fireWidth;
+
+            if (belowPixelIndex >= fireWidth * fireHeight) {
+                return;
+            }
+
+            const decay = Math.floor(Math.random() * 3);
+            const belowPixelFireIntensity = firePixelsArray[belowPixelIndex];
+            const newFireIntensity = belowPixelFireIntensity - decay >= 0 ? belowPixelFireIntensity - decay : 0;
+
+            firePixelsArray[currentPixelIndex - decay] = newFireIntensity;
+        }
+
+        function renderFire() {
+            for (let row = 0; row < fireHeight; row++) {
+                for (let column = 0; column < fireWidth; column++) {
+                    const pixelIndex = column + (fireWidth * row);
+                    const fireIntensity = firePixelsArray[pixelIndex];
+                    const color = fireColorsPalette[fireIntensity];
+                    const [r, g, b] = color;
+
+                    ctx.fillStyle = `rgb(${r},${g},${b})`;
+                    ctx.fillRect(column * 10, row * 10, 10, 10);
+                }
+            }
+        }
+
+        function drawText() {
+            const text = 'FIRE';
+            const fontSize = 80;
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = 'orange';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, canvas.width / 2, fontSize + 20);
+        }
+
+        function createFireSource() {
+            for (let column = 0; column <= fireWidth; column++) {
+                const overflowPixelIndex = fireWidth * fireHeight;
+                const pixelIndex = (overflowPixelIndex - fireWidth) + column;
+
+                firePixelsArray[pixelIndex] = 36;
+            }
+        }
+
+        function start() {
+            createFireDataStructure();
+            createFireSource();
+            setInterval(calculateFirePropagation, 50);
+            generateFireSound();
+        }
+
+        function generateFireSound() {
+            const bufferSize = audioContext.sampleRate * 0.5; // 0.5 seconds
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < bufferSize; i++) {
+                // Creating a more crackly sound with random bursts
+                data[i] = (Math.random() * 2 - 1) * (Math.random() > 0.95 ? 1 : 0.2);
+            }
+
+            fireSoundBuffer = buffer;
+        }
+
+        function playFireSound() {
+            const source = audioContext.createBufferSource();
+            source.buffer = fireSoundBuffer;
+            source.loop = true;
+            source.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            source.start();
+        }
+
+        start();
+    </script>
+</body>
+</html>
