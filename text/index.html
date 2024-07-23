@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Scrolling Text</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+
+        .marquee-container {
+            width: 100%;
+            background: linear-gradient(90deg, #282c34 0%, #61dafb 100%);
+            padding: 10px 0;
+            border: 2px solid #61dafb;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+            text-align: center;
+        }
+
+        .marquee {
+            color: #fff;
+            font-size: 1.5em;
+            font-family: 'Roboto', sans-serif;
+            white-space: nowrap;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            animation: marquee-animation 10s linear infinite;
+        }
+
+        .marquee-container:hover .marquee {
+            animation-play-state: paused;
+        }
+
+        @keyframes marquee-animation {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="marquee-container">
+        <marquee class="marquee">This is an enhanced scrolling text using the marquee tag with custom styles!</marquee>
+    </div>
+</body>
+</html>
