@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metronome</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .metronome {
+            font-size: 2em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Metronome</h1>
+    <div class="metronome">
+        <p id="bpm">BPM: <span id="currentBpm">60</span></p>
+        <button id="startStopButton" onclick="toggleMetronome()">Start</button>
+    </div>
+
+    <script>
+        let metronome;
+        let bpmChanger;
+        let isRunning = false;
+        let currentBpm = 60;
+        const intervals = [10000, 15000, 20000, 25000, 30000]; // Different intervals in milliseconds
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function toggleMetronome() {
+            if (isRunning) {
+                clearInterval(metronome);
+                clearTimeout(bpmChanger);
+                document.getElementById("startStopButton").textContent = "Start";
+            } else {
+                metronome = setInterval(playClick, (60 / currentBpm) * 1000);
+                document.getElementById("startStopButton").textContent = "Stop";
+                changeBpm();
+            }
+            isRunning = !isRunning;
+        }
+
+        function playClick() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(1000, audioContext.currentTime); // Frequency in Hz
+            gainNode.gain.setValueAtTime(1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.1);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        function changeBpm() {
+            const interval = intervals[Math.floor(Math.random() * intervals.length)];
+            bpmChanger = setTimeout(() => {
+                currentBpm = getRandomBpm();
+                document.getElementById("currentBpm").textContent = currentBpm;
+                if (isRunning) {
+                    clearInterval(metronome);
+                    metronome = setInterval(playClick, (60 / currentBpm) * 1000);
+                }
+                changeBpm();
+            }, interval);
+        }
+
+        function getRandomBpm() {
+            return Math.floor(Math.random() * (180 - 40 + 1)) + 40; // Random BPM between 40 and 180
+        }
+    </script>
+</body>
+</html>
