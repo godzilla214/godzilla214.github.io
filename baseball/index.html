@@ -3,16 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLB Scoreboard</title>
+    <title>Camera, Scoreboard, and Rectangle</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
-            background-color: #f0f0f0;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
             height: 100vh;
+            background-color: #f0f0f0;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        .camera-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            position: relative;
+        }
+        video {
+            object-fit: contain; /* Ensures video maintains its aspect ratio */
+            width: 80%;
+            height: auto;
+            border: 2px solid #fff;
         }
         .scoreboard-bar {
             width: 100%;
@@ -22,6 +35,7 @@
             bottom: 0;
             display: flex;
             justify-content: center;
+            z-index: 10; /* Ensure scoreboard is above other elements */
         }
         .scoreboard {
             background-color: #ffffff;
@@ -32,12 +46,13 @@
             display: flex;
             align-items: center;
             gap: 20px;
+            position: relative;
         }
         .scoreboard img {
             width: 50px;
         }
         .field {
-            display: flex
+            display: flex;
             flex-direction: column;
             align-items: center;
         }
@@ -115,9 +130,47 @@
         .arrow.down {
             display: none;
         }
+        .center-rectangle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 200px;
+            background-color: rgba(0, 0, 255, 0.5); /* Semi-transparent blue */
+            border: 2px solid #000;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 5; /* Ensure the rectangle is above the video but below the scoreboard */
+        }
+        .strikezone {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 0, 0, 0.5); /* Semi-transparent red */
+            border: 2px solid #000;
+            z-index: 8; /* Ensure strikezone is above the rectangle but below the scoreboard */
+        }
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-left: 20px;
+        }
+        .slider-container label {
+            font-weight: bold;
+        }
+        .slider-container input[type="range"] {
+            width: 150px;
+        }
     </style>
 </head>
 <body>
+    <div class="camera-container">
+        <video id="video" autoplay></video>
+        <div id="strikezone" class="strikezone"></div>
+    </div>
+
     <div class="scoreboard-bar">
         <div class="scoreboard">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Major_League_Baseball_logo.svg/640px-Major_League_Baseball_logo.svg.png" alt="MLB Logo">
@@ -153,10 +206,27 @@
             </div>
             <div id="message" class="message">Strikeout!</div>
             <div id="switchSides" class="switch-sides">Switch Sides!</div>
+
+            <div class="slider-container">
+                <label for="widthSlider">Strike Zone Width</label>
+                <input type="range" id="widthSlider" min="50" max="200" value="100">
+                <label for="heightSlider">Strike Zone Height</label>
+                <input type="range" id="heightSlider" min="50" max="200" value="100">
+            </div>
         </div>
     </div>
 
     <script>
+        async function startVideo() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+            } catch (error) {
+                console.error('Error accessing webcam:', error);
+            }
+        }
+
         let sideChanges = 0;
 
         function updateOuts() {
@@ -166,14 +236,12 @@
             const inningInput = document.getElementById('inning');
             let outsCount = document.querySelectorAll('.outs-container .dot.out').length;
 
-            // Handle strikeout and update outs
             if (strikes >= 3) {
                 document.getElementById('message').style.display = 'block';
                 document.getElementById('strikes').value = 0; // Reset strikes
                 document.getElementById('balls').value = 0; // Reset balls
 
                 if (outsCount < 3) {
-                    // Turn one green dot red
                     for (let dot of outs) {
                         if (!dot.classList.contains('out')) {
                             dot.classList.add('out');
@@ -184,7 +252,6 @@
                 }
 
                 if (outsCount === 3) {
-                    // Show switch sides message and flip arrow
                     document.getElementById('switchSides').style.display = 'block';
                     flipArrow(); // Flip arrow direction
                     
@@ -215,10 +282,10 @@
             const arrowDown = document.getElementById('arrowDown');
             const inningValue = parseInt(inningInput.value) || 1;
             
-            if (inningValue % 2 === 1) { // Odd innings
+            if (inningValue % 2 === 1) {
                 arrowUp.style.display = 'inline';
                 arrowDown.style.display = 'none';
-            } else { // Even innings
+            } else {
                 arrowUp.style.display = 'none';
                 arrowDown.style.display = 'inline';
             }
@@ -237,9 +304,16 @@
             inningValue++;
             if (inningValue > 9) inningValue = 1; // Loop back to inning 1 if it goes beyond 9
             inningInput.value = inningValue;
-            // Reset arrow to point up on new inning
             document.getElementById('arrowUp').style.display = 'inline';
             document.getElementById('arrowDown').style.display = 'none';
+        }
+
+        function updateStrikeZone() {
+            const strikeZone = document.getElementById('strikezone');
+            const width = document.getElementById('widthSlider').value;
+            const height = document.getElementById('heightSlider').value;
+            strikeZone.style.width = `${width}px`;
+            strikeZone.style.height = `${height}px`;
         }
 
         document.querySelectorAll('.base').forEach(base => {
@@ -251,10 +325,15 @@
         document.getElementById('strikes').addEventListener('input', updateOuts);
         document.getElementById('balls').addEventListener('input', updateOuts);
         document.getElementById('inning').addEventListener('input', toggleArrow);
+        document.getElementById('widthSlider').addEventListener('input', updateStrikeZone);
+        document.getElementById('heightSlider').addEventListener('input', updateStrikeZone);
 
-        // Initialize outs and arrow based on initial values
-        updateOuts();
-        toggleArrow();
+        window.onload = () => {
+            startVideo();
+            updateOuts(); // Initialize scoreboard
+            toggleArrow(); // Initialize arrow
+            updateStrikeZone(); // Initialize strike zone
+        };
     </script>
 </body>
 </html>
