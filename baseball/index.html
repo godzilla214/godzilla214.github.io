@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLB Scoreboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100vh;
+        }
+        .scoreboard-bar {
+            width: 100%;
+            background-color: #333;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .scoreboard {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .scoreboard img {
+            width: 50px;
+        }
+        .field {
+            display: flex
+            flex-direction: column;
+            align-items: center;
+        }
+        .field label {
+            font-weight: bold;
+            color: #333;
+        }
+        .field input {
+            width: 50px;
+            text-align: center;
+            margin-top: 5px;
+        }
+        .diamond {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            background: #d3d3d3;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            margin-left: 20px;
+        }
+        .base {
+            width: 15px;
+            height: 15px;
+            background-color: green;
+            position: absolute;
+            cursor: pointer;
+            transform: rotate(45deg);
+        }
+        .first { top: 0; right: 50%; transform: translateX(50%) rotate(45deg); }
+        .second { top: 50%; left: 0; transform: translateY(-50%) rotate(45deg); }
+        .third { bottom: 0; left: 50%; transform: translateX(-50%) rotate(45deg); }
+        .home { bottom: 50%; right: 0; transform: translateY(50%) rotate(45deg); }
+        .outs-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .outs-container .dot {
+            width: 10px;
+            height: 10px;
+            background-color: green;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .outs-container .dot.out {
+            background-color: red;
+        }
+        .message {
+            margin-top: 10px;
+            color: red;
+            font-weight: bold;
+            display: none;
+        }
+        .switch-sides {
+            margin-top: 10px;
+            color: blue;
+            font-weight: bold;
+            display: none;
+        }
+        .arrows {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .arrow {
+            font-size: 24px;
+            transition: transform 0.3s;
+        }
+        .arrow.flip {
+            transform: rotate(180deg);
+        }
+        .arrow.up {
+            display: none;
+        }
+        .arrow.down {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="scoreboard-bar">
+        <div class="scoreboard">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Major_League_Baseball_logo.svg/640px-Major_League_Baseball_logo.svg.png" alt="MLB Logo">
+            <div class="field">
+                <label for="balls">Balls</label>
+                <input type="number" id="balls" min="0" max="3" value="0">
+            </div>
+            <div class="field">
+                <label for="strikes">Strikes</label>
+                <input type="number" id="strikes" min="0" max="2" value="0">
+            </div>
+            <div class="field">
+                <label for="inning">Inning</label>
+                <input type="number" id="inning" min="1" max="9" value="1">
+            </div>
+            <div class="arrows">
+                <span id="arrowUp" class="arrow up">&#9650;</span>
+                <span id="arrowDown" class="arrow down">&#9660;</span>
+            </div>
+            <div class="diamond">
+                <div class="base first" id="firstBase"></div>
+                <div class="base second" id="secondBase"></div>
+                <div class="base third" id="thirdBase"></div>
+                <div class="base home" id="homeBase"></div>
+            </div>
+            <div class="field outs-container">
+                <label for="outs">Outs</label>
+                <div id="outs" class="outs-container">
+                    <div class="dot" id="out1"></div>
+                    <div class="dot" id="out2"></div>
+                    <div class="dot" id="out3"></div>
+                </div>
+            </div>
+            <div id="message" class="message">Strikeout!</div>
+            <div id="switchSides" class="switch-sides">Switch Sides!</div>
+        </div>
+    </div>
+
+    <script>
+        let sideChanges = 0;
+
+        function updateOuts() {
+            const strikes = parseInt(document.getElementById('strikes').value) || 0;
+            const balls = parseInt(document.getElementById('balls').value) || 0;
+            const outs = document.querySelectorAll('.outs-container .dot');
+            const inningInput = document.getElementById('inning');
+            let outsCount = document.querySelectorAll('.outs-container .dot.out').length;
+
+            // Handle strikeout and update outs
+            if (strikes >= 3) {
+                document.getElementById('message').style.display = 'block';
+                document.getElementById('strikes').value = 0; // Reset strikes
+                document.getElementById('balls').value = 0; // Reset balls
+
+                if (outsCount < 3) {
+                    // Turn one green dot red
+                    for (let dot of outs) {
+                        if (!dot.classList.contains('out')) {
+                            dot.classList.add('out');
+                            break;
+                        }
+                    }
+                    outsCount++;
+                }
+
+                if (outsCount === 3) {
+                    // Show switch sides message and flip arrow
+                    document.getElementById('switchSides').style.display = 'block';
+                    flipArrow(); // Flip arrow direction
+                    
+                    setTimeout(() => {
+                        document.getElementById('switchSides').style.display = 'none';
+                        document.querySelectorAll('.outs-container .dot').forEach(dot => dot.classList.remove('out'));
+                        document.getElementById('balls').value = 0; // Reset balls
+                        document.getElementById('strikes').value = 0; // Reset strikes
+                        outsCount = 0; // Reset outs count
+                        sideChanges++;
+                        if (sideChanges % 2 === 0) {
+                            incrementInning(); // Increment inning after every two side changes
+                        }
+                    }, 2000); // Hide message after 2 seconds
+                } else {
+                    toggleArrow(); // Update arrow direction
+                }
+
+                setTimeout(() => {
+                    document.getElementById('message').style.display = 'none';
+                }, 2000); // Hide message after 2 seconds
+            }
+        }
+
+        function toggleArrow() {
+            const inningInput = document.getElementById('inning');
+            const arrowUp = document.getElementById('arrowUp');
+            const arrowDown = document.getElementById('arrowDown');
+            const inningValue = parseInt(inningInput.value) || 1;
+            
+            if (inningValue % 2 === 1) { // Odd innings
+                arrowUp.style.display = 'inline';
+                arrowDown.style.display = 'none';
+            } else { // Even innings
+                arrowUp.style.display = 'none';
+                arrowDown.style.display = 'inline';
+            }
+        }
+
+        function flipArrow() {
+            const arrowUp = document.getElementById('arrowUp');
+            const arrowDown = document.getElementById('arrowDown');
+            arrowUp.classList.toggle('flip');
+            arrowDown.classList.toggle('flip');
+        }
+
+        function incrementInning() {
+            const inningInput = document.getElementById('inning');
+            let inningValue = parseInt(inningInput.value);
+            inningValue++;
+            if (inningValue > 9) inningValue = 1; // Loop back to inning 1 if it goes beyond 9
+            inningInput.value = inningValue;
+            // Reset arrow to point up on new inning
+            document.getElementById('arrowUp').style.display = 'inline';
+            document.getElementById('arrowDown').style.display = 'none';
+        }
+
+        document.querySelectorAll('.base').forEach(base => {
+            base.addEventListener('click', function() {
+                this.style.backgroundColor = this.style.backgroundColor === 'red' ? 'green' : 'red';
+            });
+        });
+
+        document.getElementById('strikes').addEventListener('input', updateOuts);
+        document.getElementById('balls').addEventListener('input', updateOuts);
+        document.getElementById('inning').addEventListener('input', toggleArrow);
+
+        // Initialize outs and arrow based on initial values
+        updateOuts();
+        toggleArrow();
+    </script>
+</body>
+</html>
