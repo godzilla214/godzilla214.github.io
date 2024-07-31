@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camera, Scoreboard, and Rectangle</title>
-    <style>
+    <style>      
         body {
             margin: 0;
             display: flex;
@@ -13,19 +13,50 @@
             background-color: #f0f0f0;
             overflow: hidden; /* Prevent scrolling */
         }
-        .camera-container {
-            flex: 1;
+        .replay-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 20px;
+        }
+        .replay-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #000;
-            position: relative;
+            z-index: 1000;
         }
-        video {
-            object-fit: contain; /* Ensures video maintains its aspect ratio */
-            width: 80%;
-            height: auto;
-            border: 2px solid #fff;
+        .replay-overlay video {
+            max-width: 80%;
+            max-height: 80%;
+        }
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .close-button:hover {
+            background: rgba(255, 255, 255, 1);
         }
         .scoreboard-bar {
             width: 100%;
@@ -166,13 +197,16 @@
     </style>
 </head>
 <body>
-    <div class="camera-container">
+	<div class="camera-container">
         <video id="video" autoplay></video>
         <div id="strikezone" class="strikezone"></div>
     </div>
 
     <div class="scoreboard-bar">
         <div class="scoreboard">
+            <select id="cameraSelector" class="camera-selector">
+                <option value="">Select Camera</option>
+            </select>
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Major_League_Baseball_logo.svg/640px-Major_League_Baseball_logo.svg.png" alt="MLB Logo">
             <div class="field">
                 <label for="balls">Balls</label>
@@ -215,16 +249,131 @@
             </div>
         </div>
     </div>
-
+    
+    <button id="replayButton" class="replay-button">Replay Last 5 Seconds</button>
+    
     <script>
-        async function startVideo() {
+        let mediaRecorder;
+        let recordedChunks = [];
+        let videoElement = document.getElementById('video');
+        let stream;
+        let recording = false;
+        const bufferSize = 5 * 1000; // Buffer size in milliseconds (5 seconds)
+        let replayOverlay;
+        let replayVideo;
+
+        async function startVideo(deviceId) {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                const video = document.getElementById('video');
-                video.srcObject = stream;
+                const constraints = {
+                    video: { deviceId: deviceId ? { exact: deviceId } : undefined }
+                };
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                videoElement.srcObject = stream;
+                startRecording();
             } catch (error) {
                 console.error('Error accessing webcam:', error);
             }
+        }
+
+        async function getCameraDevices() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const cameraSelect = document.getElementById('cameraSelector');
+
+                devices.forEach(device => {
+                    if (device.kind === 'videoinput') {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.text = device.label || `Camera ${cameraSelect.options.length}`;
+                        cameraSelect.add(option);
+                    }
+                });
+            } catch (error) {
+                console.error('Error enumerating devices:', error);
+            }
+        }
+
+        function startRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+
+            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+            mediaRecorder.ondataavailable = handleDataAvailable;
+            mediaRecorder.onstop = () => {
+                if (recording) {
+                    startRecording();
+                }
+            };
+            mediaRecorder.start(1000); // Collect data every second
+            recording = true;
+        }
+
+        function handleDataAvailable(event) {
+            if (event.data.size > 0) {
+                recordedChunks.push({ data: event.data, timestamp: Date.now() });
+
+                // Maintain only the last 5 seconds of video
+                while (recordedChunks.length > 0 && Date.now() - recordedChunks[0].timestamp > bufferSize) {
+                    recordedChunks.shift();
+                }
+            }
+        }
+
+        function replayLast5Seconds() {
+            if (recordedChunks.length === 0) {
+                console.log('No video recorded yet.');
+                return;
+            }
+
+            // Stop recording
+            recording = false;
+            mediaRecorder.stop();
+
+            // Create a Blob from the last 5 seconds of recordedChunks
+            let blob = new Blob(recordedChunks.map(chunk => chunk.data), { type: 'video/webm' });
+            let videoUrl = URL.createObjectURL(blob);
+
+            // Create and display the replay overlay with a close button
+            replayOverlay = document.createElement('div');
+            replayOverlay.className = 'replay-overlay';
+
+            replayVideo = document.createElement('video');
+            replayVideo.src = videoUrl;
+            replayVideo.controls = true;
+            replayVideo.autoplay = true;
+            replayOverlay.appendChild(replayVideo);
+
+            let closeButton = document.createElement('button');
+            closeButton.className = 'close-button';
+            closeButton.innerText = '×';
+            closeButton.addEventListener('click', () => {
+                stopReplay();
+            });
+            replayOverlay.appendChild(closeButton);
+
+            document.body.appendChild(replayOverlay);
+        }
+
+        function stopReplay() {
+            if (replayOverlay) {
+                replayOverlay.remove();
+                recordedChunks = []; // Clear recorded chunks
+                startRecording(); // Resume recording
+            }
+        }
+
+        document.getElementById('replayButton').addEventListener('click', () => {
+            replayLast5Seconds();
+        });
+
+        document.getElementById('cameraSelector').addEventListener('change', (event) => {
+            startVideo(event.target.value);
+        });
+
+        async function initializeVideo() {
+            getCameraDevices(); // Populate camera dropdown
+            startVideo(); // Start video with default camera
         }
 
         let sideChanges = 0;
@@ -329,7 +478,7 @@
         document.getElementById('heightSlider').addEventListener('input', updateStrikeZone);
 
         window.onload = () => {
-            startVideo();
+            initializeVideo(); // Start video and populate camera dropdown
             updateOuts(); // Initialize scoreboard
             toggleArrow(); // Initialize arrow
             updateStrikeZone(); // Initialize strike zone
