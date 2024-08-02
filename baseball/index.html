@@ -244,9 +244,9 @@
 
             <div class="slider-container">
                 <label for="widthSlider">Strike Zone Width</label>
-                <input type="range" id="widthSlider" min="25" max="350" value="100">
+                <input type="range" id="widthSlider" min="5" max="90" value="20">
                 <label for="heightSlider">Strike Zone Height</label>
-                <input type="range" id="heightSlider" min="25" max="350" value="100">
+                <input type="range" id="heightSlider" min="5" max="90" value="20">
             </div>
         </div>
     </div>
@@ -463,8 +463,8 @@
             const strikeZone = document.getElementById('strikezone');
             const width = document.getElementById('widthSlider').value;
             const height = document.getElementById('heightSlider').value;
-            strikeZone.style.width = `${width}px`;
-            strikeZone.style.height = `${height}px`;
+            strikeZone.style.width = `${width}%`;
+            strikeZone.style.height = `${height}%`;
         }
 
         document.querySelectorAll('.base').forEach(base => {
