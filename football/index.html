@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Matchup Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            animation: fadeIn 2s ease-in-out;
+        }
+        .team {
+            display: inline-block;
+            margin: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .team:hover {
+            transform: scale(1.05);
+        }
+        .team img {
+            width: 150px;
+            height: auto;
+            transition: opacity 0.3s ease;
+        }
+        .team img:hover {
+            opacity: 0.8;
+        }
+        .team p {
+            margin: 10px 0 0;
+            font-weight: bold;
+        }
+        .team .rating {
+            font-size: 1.2em;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .ovr-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        .ovr-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .ovr-bar {
+            height: 100%;
+            background-color: #4caf50;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        .score-table {
+            width: 100%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            animation: fadeIn 2s ease-in-out;
+        }
+        .score-table th, .score-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+        .score-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+        .score-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .score-table tr:hover {
+            background-color: #e0e0e0;
+        }
+        form {
+            margin-top: 20px;
+        }
+        select, button {
+            font-size: 1em;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        select:hover, button:hover {
+            background-color: #ddd;
+            transform: scale(1.05);
+        }
+        .prediction-result, .final-scores {
+            margin: 20px 0;
+            font-size: 1.2em;
+            animation: slideIn 1s ease-in-out;
+        }
+        .final-scores {
+            font-weight: bold;
+        }
+        table {
+            display: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Football Matchup Predictor</h1>
+        <div class="team" onclick="selectTeam('alabama')">
+            <img src="https://sports.cbsimg.net/fly/images/team-logos/light/457.svg" alt="alabama">
+            <p>alabama (5)</p>
+            <div class="rating">
+                <span class="ovr-circle">95</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 95%; background-color: #4caf50;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('utsa')">
+            <img src="https://www.utsa.edu/_files/home/images/ctas/featured/rowdy-head-white-outline.svg" alt="Utsa">
+            <p>Utsa</p>
+            <div class="rating">
+                <span class="ovr-circle">77</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 77%; background-color: yellow;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('nebraska')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Nebraska_Cornhuskers_logo%2C_1992%E2%80%932003.svg/987px-Nebraska_Cornhuskers_logo%2C_1992%E2%80%932003.svg.png" alt="Nebraska">
+            <p>Nebraska</p>
+            <div class="rating">
+                <span class="ovr-circle">85</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 85%; background-color: #4caf50;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('maryland')">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlspR_Hwu_VkwJTBFxAFvycBkF9BvaVyehIg&s" alt="Maryland">
+            <p>Maryland</p>
+            <div class="rating">
+                <span class="ovr-circle">80</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 80%; background-color: #4caf50;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('texas')">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtL3i8VbqL89pY1t3Qz5xi3VvayNU759THFg&s" alt="Texas">
+            <p>Texas (3)</p>
+            <div class="rating">
+                <span class="ovr-circle">90</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 90%; background-color: #4caf50;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('iowa')">
+            <img src="https://1000logos.net/wp-content/uploads/2021/06/Iowa-Hawkeyes-logo.png" alt="Iowa">
+            <p>Iowa (24)</p>
+            <div class="rating">
+                <span class="ovr-circle">82</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 82%; background-color: #4caf50;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('ohioState')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Ohio_State_Buckeyes_logo.svg/350px-Ohio_State_Buckeyes_logo.svg.png" alt="Ohio State">
+            <p>Ohio State (10)</p>
+            <div class="rating">
+                <span class="ovr-circle">88</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 88%; background-color: #4caf50;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('oklahomaState')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Oklahoma_State_University_system_logo.svg/400px-Oklahoma_State_University_system_logo.svg.png" alt="Oklahoma State">
+            <p>Oklahoma State (16)</p>
+            <div class="rating">
+                <span class="ovr-circle">83</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 83%; background-color: #4caf50;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('liberty')">
+            <img src="https://1000logos.net/wp-content/uploads/2021/06/Liberty-Flames-logo.png" alt="Liberty">
+            <p>Liberty (25)</p>
+            <div class="rating">
+                <span class="ovr-circle">75</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 75%; background-color: yellow;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('oregon')">
+            <img src="https://1000logos.net/wp-content/uploads/2021/07/Oregon-Ducks-logo.png" alt="Oregon">
+            <p>Oregon (6)</p>
+            <div class="rating">
+                <span class="ovr-circle">86</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 86%; background-color: #4caf50;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('oregonState')">
+            <img src="https://upload.wikimedia.org/wikipedia/en/1/1b/Oregon_State_Beavers_logo.svg" alt="Oregon State">
+            <p>Oregon State</p>
+            <div class="rating">
+                <span class="ovr-circle">78</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 78%; background-color: yellow;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('clemson')">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBQJnsiaqKCy88R0Spsr1YeZwhNyFlM-luwA&st" alt="Clemson">
+            <p>Clemson (20)</p>
+            <div class="rating">
+                <span class="ovr-circle">80</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 80%; background-color: #4caf50;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('utep')">
+            <img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/2638.png" alt="UTEP">
+            <p>UTEP</p>
+            <div class="rating">
+                <span class="ovr-circle">58</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 58%; background-color: red;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="team" onclick="selectTeam('georgia')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Georgia_Athletics_logo.svg/1280px-Georgia_Athletics_logo.svg.png" alt="Goergia">
+            <p>Goergia (5)</p>
+            <div class="rating">
+                <span class="ovr-circle">96</span>
+                <div class="ovr-bar-container">
+                    <div class="ovr-bar" style="width: 96%; background-color: #4caf50;"></div>
+                </div>
+            </div>
+        </div>    
+        
+        <h2>Predict the Winner</h2>
+        <form id="predictionForm">
+            <div class="team">
+                <label for="team1">Team 1:</label>
+                <select id="team1" onchange="updateSelectedTeam('team1')">
+                    <option value="">Select Team</option>
+                    <option value="nebraska">Nebraska</option>
+                    <option value="maryland">Maryland</option>
+                    <option value="texas">Texas</option>
+                    <option value="iowa">Iowa</option>
+                    <option value="ohioState">Ohio State</option>
+                    <option value="oklahomaState">Oklahoma State</option>
+                    <option value="liberty">Liberty</option>
+                    <option value="oregon">Oregon</option>
+                    <option value="oregonState">Oregon State</option>
+                    <option value="clemson">Clemson</option>
+                    <option value="utep">UTEP</option>
+                    <option value="georgia">Georgia</option>
+                    <option value="utsa">Utsa</option>
+                    <option value="alabama">alabama</option>
+                </select>
+            </div>
+            <div class="team">
+                <label for="team2">Team 2:</label>
+                <select id="team2" onchange="updateSelectedTeam('team2')">
+                    <option value="">Select Team</option>
+                    <option value="nebraska">Nebraska</option>
+                    <option value="maryland">Maryland</option>
+                    <option value="texas">Texas</option>
+                    <option value="iowa">Iowa</option>
+                    <option value="ohioState">Ohio State</option>
+                    <option value="oklahomaState">Oklahoma State</option>
+                    <option value="liberty">Liberty</option>
+                    <option value="oregon">Oregon</option>
+                    <option value="oregonState">Oregon State</option>
+                    <option value="clemson">Clemson</option>
+                    <option value="utep">UTEP</option>
+                    <option value="georgia">Georgia</option>
+                    <option value="utsa">Utsa</option>
+                    <option value="alabama">alabama</option>
+                </select>
+            </div>
+            <button type="button" onclick="predictWinner()">Predict</button>
+        </form>
+
+        <div class="prediction-result" id="predictionResult"></div>
+        <div class="final-scores" id="finalScores"></div>
+        <table class="score-table" id="quarterScores" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Quarter</th>
+                    <th id="team1Name">Team 1</th>
+                    <th id="team2Name">Team 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1st Quarter</td>
+                    <td id="team1Q1">0</td>
+                    <td id="team2Q1">0</td>
+                </tr>
+                <tr>
+                    <td>2nd Quarter</td>
+                    <td id="team1Q2">0</td>
+                    <td id="team2Q2">0</td>
+                </tr>
+                <tr>
+                    <td>3rd Quarter</td>
+                    <td id="team1Q3">0</td>
+                    <td id="team2Q3">0</td>
+                </tr>
+                <tr>
+                    <td>4th Quarter</td>
+                    <td id="team1Q4">0</td>
+                    <td id="team2Q4">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const ratings = {
+            nebraska: 85,
+            maryland: 80,
+            texas: 90,
+            iowa: 82,
+            ohioState: 88,
+            oklahomaState: 83,
+            liberty: 75,
+            oregon: 86,
+            oregonState: 78,
+            clemson: 80,
+            utep: 58,
+            georgia: 96,
+            utsa: 77,
+            alabama: 95
+        };
+
+        let selectedTeam1 = '';
+        let selectedTeam2 = '';
+
+        function selectTeam(team) {
+            if (!selectedTeam1) {
+                selectedTeam1 = team;
+                document.getElementById('team1').value = team;
+                document.getElementById('team1').dispatchEvent(new Event('change'));
+            } else if (!selectedTeam2) {
+                selectedTeam2 = team;
+                document.getElementById('team2').value = team;
+                document.getElementById('team2').dispatchEvent(new Event('change'));
+            }
+        }
+
+        function updateSelectedTeam(id) {
+            const value = document.getElementById(id).value;
+            if (id === 'team1') {
+                selectedTeam1 = value;
+            } else if (id === 'team2') {
+                selectedTeam2 = value;
+            }
+        }
+
+        function getScore(rating) {
+            // Calculate score based on rating with a more dynamic range
+            const baseScore = Math.floor(rating * 0.3);
+            return baseScore + Math.floor(Math.random() * 10);
+        }
+
+        function predictWinner() {
+            const team1 = document.getElementById('team1').value;
+            const team2 = document.getElementById('team2').value;
+
+            if (!team1 || !team2) {
+                alert('Please select both teams!');
+                return;
+            }
+
+            const rating1 = ratings[team1];
+            const rating2 = ratings[team2];
+
+            const score1 = getScore(rating1);
+            const score2 = getScore(rating2);
+
+            let result = '';
+            if (score1 > score2) {
+                result = `Team 1 (${team1.charAt(0).toUpperCase() + team1.slice(1)}) is predicted to win!`;
+            } else if (score1 < score2) {
+                result = `Team 2 (${team2.charAt(0).toUpperCase() + team2.slice(1)}) is predicted to win!`;
+            } else {
+                result = 'It\'s a tie!';
+            }
+
+            const scores = `Final Score: ${team1.charAt(0).toUpperCase() + team1.slice(1)} ${score1} - ${score2} ${team2.charAt(0).toUpperCase() + team2.slice(1)}`;
+
+            document.getElementById('predictionResult').textContent = result;
+            document.getElementById('finalScores').textContent = scores;
+
+            // Display quarter scores
+            displayQuarterScores(team1, team2, score1, score2);
+        }
+
+        function displayQuarterScores(team1, team2, score1, score2) {
+            const team1Name = team1.charAt(0).toUpperCase() + team1.slice(1);
+            const team2Name = team2.charAt(0).toUpperCase() + team2.slice(1);
+
+            const quarterScores = document.getElementById('quarterScores');
+            document.getElementById('team1Name').textContent = team1Name;
+            document.getElementById('team2Name').textContent = team2Name;
+
+            const scores = {
+                [team1]: [Math.floor(score1 / 4), Math.floor(score1 / 4), Math.floor(score1 / 4), score1 - Math.floor(score1 / 4) * 3],
+                [team2]: [Math.floor(score2 / 4), Math.floor(score2 / 4), Math.floor(score2 / 4), score2 - Math.floor(score2 / 4) * 3]
+            };
+
+            document.getElementById('team1Q1').textContent = scores[team1][0];
+            document.getElementById('team1Q2').textContent = scores[team1][1];
+            document.getElementById('team1Q3').textContent = scores[team1][2];
+            document.getElementById('team1Q4').textContent = scores[team1][3];
+
+            document.getElementById('team2Q1').textContent = scores[team2][0];
+            document.getElementById('team2Q2').textContent = scores[team2][1];
+            document.getElementById('team2Q3').textContent = scores[team2][2];
+            document.getElementById('team2Q4').textContent = scores[team2][3];
+
+            quarterScores.style.display = 'table';
+        }
+    </script>
+</body>
+</html>
